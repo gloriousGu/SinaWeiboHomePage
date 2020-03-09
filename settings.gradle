@@ -1,0 +1,2 @@
+rootProject.name='SinaHomePage-Demo'
+include ':app'
