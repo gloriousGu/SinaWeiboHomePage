@@ -5,11 +5,13 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
 import androidx.core.widget.NestedScrollView;
 
 import com.gu.sinahomepage.R;
@@ -115,8 +117,21 @@ public class HomePageView extends NestedScrollView {
   public void onNestedPreScroll(
       @NonNull View target, int dx, int dy, @NonNull int[] consumed, int type) {
     super.onNestedPreScroll(target, dx, dy, consumed, type);
-    consumed[1] = deltaYConsume(dy);
+    log("type=" + type);
+    if (type == ViewCompat.TYPE_TOUCH) {
+      consumed[1] = deltaYConsume(dy);
+    }
   }
+  //
+  //  @Override
+  //  public boolean dispatchNestedPreFling(float velocityX, float velocityY) {
+  //    return true;
+  //  }
+  //
+  //  @Override
+  //  public boolean onNestedPreFling(View target, float velocityX, float velocityY) {
+  //    return super.onNestedPreFling(target, velocityX, velocityY);
+  //  }
 
   private void touchInImage(int dy) {
     if (dy < 0 && childIsTop) {
