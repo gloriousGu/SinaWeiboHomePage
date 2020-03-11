@@ -20,6 +20,7 @@ public class HomePageView extends NestedScrollView {
   ImageView img;
   MyScrollView childScrollView;
   boolean childIsTop = true;
+  boolean cancelScroll;
 
   public HomePageView(@NonNull Context context) {
     super(context);
@@ -91,11 +92,7 @@ public class HomePageView extends NestedScrollView {
       case MotionEvent.ACTION_MOVE:
         int dy = lastY - y;
         lastY = y;
-        if (dy < 0 && childIsTop) {
-          img2Stretch(dy, getScrollY());
-        } else if (dy > 0 && getStretchSize() > 0) {
-          img2Stretch(dy, getScrollY());
-        }
+        touchInImage(dy);
         break;
       case MotionEvent.ACTION_UP:
         break;
@@ -104,36 +101,44 @@ public class HomePageView extends NestedScrollView {
   }
 
   @Override
+  public boolean dispatchNestedPreScroll(
+      int dx, int dy, int[] consumed, int[] offsetInWindow, int type) {
+    // 停止image恢复时页面滚动 处理成外层消耗dy
+    if (dy > 0 && getStretchSize() > 0) {
+      consumed[1] = Math.min(getStretchSize(), dy);
+      return true;
+    }
+    return super.dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow, type);
+  }
+
+  @Override
   public void onNestedPreScroll(
       @NonNull View target, int dx, int dy, @NonNull int[] consumed, int type) {
     super.onNestedPreScroll(target, dx, dy, consumed, type);
+    consumed[1] = deltaYConsume(dy);
+  }
+
+  private void touchInImage(int dy) {
     if (dy < 0 && childIsTop) {
-      // img need to stretch
-      consumed[1] = img2Stretch(dy, getScrollY());
+      final int scrollY = getScrollY();
+      if (scrollY > 0) {
+        int res = scrollY + dy;
+        if (res < 0) {
+          stretchImg(img, -res);
+        }
+      } else if (scrollY == 0) {
+        stretchImg(img, -dy);
+      }
     } else if (dy > 0 && getStretchSize() > 0) {
-      consumed[1] = img2Stretch(dy, getScrollY());
-    } else if (dy > 0 && getStretchSize() == 0 && topVisible()) {
-      int res = Math.min(getScrollY() + dy, IMGHEIGHT) - getScrollY();
-      consumed[1] = res;
-      scrollBy(0, res);
-    } else if (dy > 0 && foldTop()) {
-      //
+      int res = Math.min(getStretchSize(), dy);
+      stretchImg(img, -res);
     }
   }
 
-  /**
-   * @param dy dy<0
-   * @param scrollY homePageView scroll y
-   * @return stretch dy
-   */
-  private int img2Stretch(int dy, int scrollY) {
-
-    if (dy == 0) return 0;
-    else if (dy > 0) {
-      int res = Math.min(getStretchSize(), dy);
-      stretchImg(img, -res);
-      return res;
-    } else {
+  private int deltaYConsume(int dy) {
+    if (dy < 0 && childIsTop) {
+      // img need to stretch
+      final int scrollY = getScrollY();
       if (scrollY > 0) {
         int res = scrollY + dy;
         if (res >= 0) {
@@ -145,9 +150,47 @@ public class HomePageView extends NestedScrollView {
       } else if (scrollY == 0) {
         stretchImg(img, -dy);
       }
+      return dy;
+    } else if (dy > 0 && getStretchSize() > 0) {
+      int res = Math.min(getStretchSize(), dy);
+      stretchImg(img, -res);
+      return res;
+    } else if (dy > 0 && getStretchSize() == 0 && topVisible()) {
+      int res = Math.min(getScrollY() + dy, IMGHEIGHT) - getScrollY();
+      scrollBy(0, res);
+      return res;
+    } else if (dy > 0 && foldTop()) {
+      //
     }
-    return dy;
+    return 0;
   }
+  //  /**
+  //   * @param dy dy<0
+  //   * @param scrollY homePageView scroll y
+  //   * @return stretch dy
+  //   */
+  //  private int img2Stretch(int dy, int scrollY) {
+  //
+  //    if (dy == 0) return 0;
+  //    else if (dy > 0) {
+  //      int res = Math.min(getStretchSize(), dy);
+  //      stretchImg(img, -res);
+  //      return res;
+  //    } else {
+  //      if (scrollY > 0) {
+  //        int res = scrollY + dy;
+  //        if (res >= 0) {
+  //          scrollBy(0, dy);
+  //        } else {
+  //          scrollTo(0, 0);
+  //          stretchImg(img, -res);
+  //        }
+  //      } else if (scrollY == 0) {
+  //        stretchImg(img, -dy);
+  //      }
+  //      return dy;
+  //    }
+  //  }
 
   private int getStretchSize() {
     return img.getHeight() - IMGHEIGHT;
