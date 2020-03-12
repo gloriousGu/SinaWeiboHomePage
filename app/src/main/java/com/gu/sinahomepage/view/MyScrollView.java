@@ -7,11 +7,16 @@ import android.view.MotionEvent;
 
 import androidx.core.widget.NestedScrollView;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 public class MyScrollView extends NestedScrollView
     implements NestedScrollView.OnScrollChangeListener {
 
   int contentHeight;
   int scrollHeight;
+  Method stopFlingMethod;
+  private static final String METHOD_NAME = "abortAnimatedScroll"; // 反射获取子类私有方法
 
   public void setScrollListener(ScrollListener scrollListener) {
     this.mScrollListener = scrollListener;
@@ -26,6 +31,23 @@ public class MyScrollView extends NestedScrollView
   public MyScrollView(Context context, AttributeSet attrs) {
     super(context, attrs);
     setOnScrollChangeListener(this);
+    try {
+      stopFlingMethod = getClass().getSuperclass().getDeclaredMethod(METHOD_NAME);
+      stopFlingMethod.setAccessible(true);
+    } catch (NoSuchMethodException e) {
+      e.printStackTrace();
+    }
+  }
+
+  /*
+  反射机制调用 NestedScrollView -- abortAnimatedScroll()
+   */
+  public void stopFling() {
+    try {
+      stopFlingMethod.invoke(this);
+    } catch (IllegalAccessException | InvocationTargetException e) {
+      e.printStackTrace();
+    }
   }
 
   @Override
