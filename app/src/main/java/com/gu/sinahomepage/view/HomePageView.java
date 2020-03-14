@@ -19,7 +19,13 @@ public class HomePageView extends NestedScrollView {
 
   int IMAGE_HEIGHT;
   ImageView img;
-  MyScrollView childScrollView;
+  MyScrollView childScrollView1, childScrollView2, childScrollView3;
+  MyHorizontalScrollView horizontalScrollView;
+
+  public void setChildIsTop(boolean childIsTop) {
+    this.childIsTop = childIsTop;
+  }
+
   boolean childIsTop = true;
   boolean cancelScroll;
 
@@ -32,49 +38,77 @@ public class HomePageView extends NestedScrollView {
     init();
   }
 
+  ScrollListener scrollListener =
+      new ScrollListener() {
+        @Override
+        public void onScrollToBottom() {}
+
+        @Override
+        public void onScrollToTop() {
+          childIsTop = true;
+        }
+
+        @Override
+        public void onScroll(int scrollY) {
+          if (scrollY != 0) childIsTop = false;
+        }
+
+        @Override
+        public void notBottom() {}
+      };
+
   private void init() {
     post(
         new Runnable() {
           @Override
           public void run() {
+            horizontalScrollView = findViewById(R.id.horizontalScrollView);
             img = findViewById(R.id.image);
-            childScrollView = findViewById(R.id.scrollView);
-            childScrollView.setScrollListener(
-                new ScrollListener() {
-                  @Override
-                  public void onScrollToBottom() {}
-
-                  @Override
-                  public void onScrollToTop() {
-                    childIsTop = true;
-                  }
-
-                  @Override
-                  public void onScroll(int scrollY) {
-                    if (scrollY != 0) childIsTop = false;
-                  }
-
-                  @Override
-                  public void notBottom() {}
-                });
+            childScrollView1 = findViewById(R.id.scrollView1);
+            childScrollView1.setScrollListener(scrollListener);
+            childScrollView2 = findViewById(R.id.scrollView2);
+            childScrollView2.setScrollListener(scrollListener);
+            childScrollView3 = findViewById(R.id.scrollView3);
+            childScrollView3.setScrollListener(scrollListener);
             IMAGE_HEIGHT = img.getMeasuredHeight();
             log("imgHeight=" + IMAGE_HEIGHT);
             log("height= " + getMeasuredHeight());
             int height = getMeasuredHeight();
-            LinearLayout.LayoutParams params =
-                (LinearLayout.LayoutParams) childScrollView.getLayoutParams();
-            params.height = height;
-            childScrollView.setLayoutParams(params);
+            int width = getMeasuredWidth();
+
+            initSize(horizontalScrollView, width, height);
+            initSize(childScrollView1, width, height);
+            initSize(childScrollView2, width, height);
+            initSize(childScrollView3, width, height);
+
+            //            LinearLayout contentlayout = findViewById(R.id.contentlayout);
+            //            MyHorizontalScrollView.LayoutParams params =
+            //                (MyHorizontalScrollView.LayoutParams) contentlayout.getLayoutParams();
+            //            params.height = height;
+            //            params.width = 3 * width;
+            //            contentlayout.setLayoutParams(params);
           }
         });
+  }
+
+  private void initSize(View view, int width, int height) {
+    LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) view.getLayoutParams();
+    params.height = height;
+    params.width = width;
+    view.setLayoutParams(params);
   }
 
   @Override
   public boolean dispatchTouchEvent(MotionEvent ev) {
     switch (ev.getAction()) {
       case MotionEvent.ACTION_DOWN:
-        //防抖动
-        childScrollView.stopFling();
+        mActivePointerId = ev.getPointerId(0);
+        lastY = (int) ev.getY();
+        // 防抖动
+        childScrollView1.stopFling();
+        childScrollView2.stopFling();
+        childScrollView3.stopFling();
+
         break;
       case MotionEvent.ACTION_UP:
         if (getStretchSize() > 0) {
@@ -86,15 +120,20 @@ public class HomePageView extends NestedScrollView {
   }
 
   int lastY;
+  int mActivePointerId;
 
   @Override
   public boolean onTouchEvent(MotionEvent ev) {
     int y = (int) ev.getY();
     switch (ev.getAction()) {
       case MotionEvent.ACTION_DOWN:
-        lastY = y;
         break;
       case MotionEvent.ACTION_MOVE:
+        final int activePointerIndex = ev.findPointerIndex(mActivePointerId);
+        if (activePointerIndex == -1) {
+          log("HomePageView >>> Invalid pointerId=" + mActivePointerId + " in onTouchEvent");
+          break;
+        }
         int dy = lastY - y;
         lastY = y;
         touchInImage(dy);
@@ -192,6 +231,10 @@ public class HomePageView extends NestedScrollView {
 
   private void stretchImg(ImageView img, int dy) {
     LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) img.getLayoutParams();
+    if (dy > 100) {
+      log("dy too big ! dy=" + dy);
+      //      return;
+    }
     params.height += dy;
     img.setLayoutParams(params);
   }

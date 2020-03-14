@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.ViewConfiguration;
 
 import androidx.core.widget.NestedScrollView;
 
@@ -40,7 +41,7 @@ public class MyScrollView extends NestedScrollView
   }
 
   /*
-  反射机制调用 NestedScrollView -- abortAnimatedScroll()
+  反射机制调用 NestedScrollView 的 abortAnimatedScroll()
    */
   public void stopFling() {
     try {
@@ -50,25 +51,33 @@ public class MyScrollView extends NestedScrollView
     }
   }
 
+  int lastX, lastY;
+
   @Override
   public boolean dispatchTouchEvent(MotionEvent ev) {
     switch (ev.getAction()) {
       case MotionEvent.ACTION_DOWN:
+        lastX = (int) ev.getRawX();
+        lastY = (int) ev.getRawY();
+        getParent().getParent().requestDisallowInterceptTouchEvent(true);
         break;
       case MotionEvent.ACTION_MOVE:
+        int x = (int) ev.getRawX();
+        int y = (int) ev.getRawY();
+        if (Math.abs(lastX - x) > Math.abs(lastY - y) + 4) {
+          getParent().getParent().requestDisallowInterceptTouchEvent(false);
+        }
+        lastX = x;
+        lastY = y;
         break;
     }
     return super.dispatchTouchEvent(ev);
   }
 
   @Override
-  public boolean onTouchEvent(MotionEvent ev) {
-    return super.onTouchEvent(ev);
-  }
-
-  @Override
   public void onScrollChange(
       NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+    if (mScrollListener == null) return;
     mScrollListener.onScroll(scrollY);
 
     if (scrollY + scrollHeight >= contentHeight || contentHeight <= scrollHeight) {
