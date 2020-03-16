@@ -5,6 +5,7 @@ import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -40,16 +41,27 @@ public class TabLayout extends FrameLayout {
   private boolean clicked;
 
   public void onPageScrolled(int from, int to, float positionOffset) {
+    if (getPos() == 2) log("000000000000000000000000000000000000000000000000000000");
     // 如果是点击事件，则不使用滚动的百分比，使用默认动画处理
     if (clicked) return;
     // 如果是左右滑动，使用百分比处理mIndicatorView效果
     if (from < to) {
       // 向右
+      //      log("向右 positionOffset= " + positionOffset);
       mIndicatorView.setPercent(positionOffset);
     } else if (from > to) {
       // 向左
-      mIndicatorView.setPercent(positionOffset - 1);
+      //      log("向左 positionOffset= " + positionOffset);
+      mIndicatorView.setPercent(positionOffset - 1); // -1
     }
+  }
+
+  private void log(String log) {
+    Log.e("log", "----" + log + "----");
+  }
+
+  public int getPos() {
+    return mIndicatorView.getPos();
   }
 
   public void selectPos(int pos) {

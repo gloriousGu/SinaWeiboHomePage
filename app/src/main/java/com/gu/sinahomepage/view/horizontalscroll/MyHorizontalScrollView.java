@@ -72,7 +72,7 @@ public class MyHorizontalScrollView extends HorizontalScrollView {
           log("start FLING!");
           smoothScrollTo(calcPageIndexBySpeed(), getScrollY());
         } else {
-          scrollSpringBack();
+          scrollByActionUP();
         }
         // do self fling!
         return true;
@@ -84,7 +84,10 @@ public class MyHorizontalScrollView extends HorizontalScrollView {
     return pageCurIndex * getWidth();
   }
 
-  private void scrollSpringBack() {
+  // 滚动dis没有达到尺寸，回弹
+  boolean springBack;
+
+  private void scrollByActionUP() {
     final int scrollX = getScrollX();
     final int width = getWidth();
     int dis;
@@ -92,11 +95,17 @@ public class MyHorizontalScrollView extends HorizontalScrollView {
       dis = scrollX % width;
       if (dis > width / 3 || scrollX == (pageSize - 1) * width)
         smoothScrollTo(pageCurIndex * width, getScrollY());
-      else smoothScrollTo(pageLastIndex * width, getScrollY());
+      else {
+        springBack = true;
+        smoothScrollTo(pageLastIndex * width, getScrollY());
+      }
     } else if (pageCurIndex < pageLastIndex) {
       dis = width - scrollX % width;
       if (dis > width / 3) smoothScrollTo(pageCurIndex * width, getScrollY());
-      else smoothScrollTo(pageLastIndex * width, getScrollY());
+      else {
+        springBack = true;
+        smoothScrollTo(pageLastIndex * width, getScrollY());
+      }
     }
     //
   }
@@ -115,7 +124,7 @@ public class MyHorizontalScrollView extends HorizontalScrollView {
   }
 
   private void log(String log) {
-    Log.e(TAG, "----" + log + "----");
+    Log.e("TAG", "----" + log + "----");
   }
 
   @Override
@@ -125,20 +134,45 @@ public class MyHorizontalScrollView extends HorizontalScrollView {
     int width = getWidth();
     if (deltaX > 0) {
       if (l % width == 0) {
+        springBack = false;
         changePageIndex(l / width);
         mTabLayout.selectPos(pageCurIndex);
       } else {
-        changePageIndex(l / width + 1);
-        mTabLayout.onPageScrolled(pageLastIndex, pageCurIndex, 1.0f * (l % width) / width);
+        if (!springBack) {
+          changePageIndex(l / width + 1);
+          mTabLayout.onPageScrolled(pageLastIndex, pageCurIndex, 1.0f * (l % width) / width);
+        } else {
+          changePageIndex(l / width + 1);
+          float rate = 1.0f * (l % width) / width - 1f;
+          //          log(
+          //              "///////////////////tab pos = "
+          //                  + mTabLayout.getPos()
+          //                  + ",pageLastIndex= "
+          //                  + pageLastIndex
+          //                  + ",pageCurIndex= "
+          //                  + pageCurIndex
+          //                  + ",rate= "
+          //                  + rate);
+          mTabLayout.onPageScrolled(pageLastIndex, pageCurIndex, rate);
+        }
       }
     } else if (deltaX < 0) {
       changePageIndex(l / width);
       if (l % width == 0) {
+        springBack = false;
         mTabLayout.selectPos(pageCurIndex);
       } else {
-        mTabLayout.onPageScrolled(pageLastIndex, pageCurIndex, 1.0f * (l % width) / width);
+        mTabLayout.onPageScrolled(
+            pageLastIndex, pageCurIndex, (springBack ? 1 : 0) + 1.0f * (l % width) / width);
       }
     }
+    log(
+        "///////deltaX= "
+            + deltaX
+            + "////////////pageLastIndex= "
+            + pageLastIndex
+            + ",pageCurIndex= "
+            + pageCurIndex);
   }
 
   private void changePageIndex(int cur) {
