@@ -54,6 +54,7 @@ public class MyScrollView extends NestedScrollView
     }
   }
 
+  /** 备注 */
   int lastX, lastY;
 
   @Override
@@ -102,7 +103,7 @@ public class MyScrollView extends NestedScrollView
   }
 
   private boolean parentFoldTop() {
-    return ((HomePageView) getParent()).foldTop();
+    return ((HomePageView) getParent()).topInvisible();
   }
 
   public void log(String log) {

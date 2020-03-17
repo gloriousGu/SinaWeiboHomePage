@@ -54,6 +54,7 @@ public class MyHorizontalScrollView extends HorizontalScrollView {
     return super.dispatchTouchEvent(ev);
   }
 
+  /** 备注 */
   boolean res;
 
   @Override
