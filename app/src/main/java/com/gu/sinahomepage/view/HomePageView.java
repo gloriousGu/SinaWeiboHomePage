@@ -204,7 +204,7 @@ public class HomePageView extends NestedScrollView {
     return 0;
   }
 
-  private int getStretchSize() {
+  public int getStretchSize() {
     return imgLayout.getHeight() - IMAGE_HEIGHT;
   }
 

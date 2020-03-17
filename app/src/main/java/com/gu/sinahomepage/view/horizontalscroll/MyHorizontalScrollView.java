@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.gu.indicatorwidget.TabLayout;
+import com.gu.sinahomepage.view.HomePageView;
 
 import java.lang.reflect.Field;
 
@@ -53,10 +54,22 @@ public class MyHorizontalScrollView extends HorizontalScrollView {
     return super.dispatchTouchEvent(ev);
   }
 
+  boolean res;
+
   @Override
   public boolean onInterceptTouchEvent(MotionEvent ev) {
     super.onInterceptTouchEvent(ev);
-    return true; // cation!
+    switch (ev.getAction()) {
+      case MotionEvent.ACTION_DOWN:
+        res = true;
+        return false;
+      case MotionEvent.ACTION_MOVE:
+        int stretchSize = ((HomePageView) getParent().getParent()).getStretchSize();
+        if (stretchSize > 0) {
+          res = false;
+        }
+    }
+    return res; // cation!
   }
 
   @Override
