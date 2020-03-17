@@ -20,7 +20,7 @@ public class MyHorizontalScrollView extends HorizontalScrollView {
   TabLayout mTabLayout;
   private boolean cancelSuperFling;
   private static final int START_FLING_SPEED = 500;
-  int pageCurIndex, pageLastIndex;
+  int pageCurIndex;
   int pageSize;
 
   public MyHorizontalScrollView(@NonNull Context context) {
@@ -55,7 +55,8 @@ public class MyHorizontalScrollView extends HorizontalScrollView {
 
   @Override
   public boolean onInterceptTouchEvent(MotionEvent ev) {
-    return super.onInterceptTouchEvent(ev);
+    super.onInterceptTouchEvent(ev);
+    return true; // cation!
   }
 
   @Override
@@ -69,45 +70,34 @@ public class MyHorizontalScrollView extends HorizontalScrollView {
         super.onTouchEvent(ev);
         cancelSuperFling = false;
         if (Math.abs(speedY) > START_FLING_SPEED) {
-          log("start FLING!");
-          smoothScrollTo(calcPageIndexBySpeed(), getScrollY());
+          // do self fling!
+          smoothScrollTo(calcPageIndexBySpeed(speedY), getScrollY());
         } else {
+          // spring back
           scrollByActionUP();
         }
-        // do self fling!
         return true;
     }
     return super.onTouchEvent(ev);
   }
 
-  private int calcPageIndexBySpeed() {
-    return pageCurIndex * getWidth();
+  private int calcPageIndexBySpeed(int speedY) {
+    return speedY < 0 ? (pageCurIndex + 1) * getWidth() : (pageCurIndex - 1) * getWidth();
   }
-
-  // 滚动dis没有达到尺寸，回弹
-  boolean springBack;
 
   private void scrollByActionUP() {
     final int scrollX = getScrollX();
     final int width = getWidth();
-    int dis;
-    if (pageCurIndex > pageLastIndex) {
-      dis = scrollX % width;
-      if (dis > width / 3 || scrollX == (pageSize - 1) * width)
-        smoothScrollTo(pageCurIndex * width, getScrollY());
-      else {
-        springBack = true;
-        smoothScrollTo(pageLastIndex * width, getScrollY());
-      }
-    } else if (pageCurIndex < pageLastIndex) {
-      dis = width - scrollX % width;
-      if (dis > width / 3) smoothScrollTo(pageCurIndex * width, getScrollY());
-      else {
-        springBack = true;
-        smoothScrollTo(pageLastIndex * width, getScrollY());
-      }
+    int deltaX = scrollX - pageCurIndex * width;
+    if (deltaX > 0 && deltaX > width / 3) {
+      smoothScrollTo((pageCurIndex + 1) * width, getScrollY());
+    } else if (deltaX > 0 && deltaX <= width / 3) {
+      smoothScrollTo(pageCurIndex * width, getScrollY());
+    } else if (deltaX < 0 && deltaX < -width / 3) {
+      smoothScrollTo((pageCurIndex - 1) * width, getScrollY());
+    } else if (deltaX < 0 && deltaX >= -width / 3) {
+      smoothScrollTo(pageCurIndex * width, getScrollY());
     }
-    //
   }
 
   @Override
@@ -124,61 +114,23 @@ public class MyHorizontalScrollView extends HorizontalScrollView {
   }
 
   private void log(String log) {
-    Log.e("TAG", "----" + log + "----");
+    Log.e(TAG, "----" + log + "----");
   }
 
   @Override
   protected void onScrollChanged(int l, int t, int oldl, int oldt) {
     super.onScrollChanged(l, t, oldl, oldt);
-    int deltaX = l - oldl;
     int width = getWidth();
-    if (deltaX > 0) {
-      if (l % width == 0) {
-        springBack = false;
-        changePageIndex(l / width);
-        mTabLayout.selectPos(pageCurIndex);
+    if (l % width == 0) {
+      pageCurIndex = l / width;
+      mTabLayout.selectPos(pageCurIndex);
+    } else {
+      int deltaX = l - pageCurIndex * width;
+      if (deltaX > 0) {
+        mTabLayout.onPageScrolled(pageCurIndex, pageCurIndex + 1, 1.0f * (l % width) / width);
       } else {
-        if (!springBack) {
-          changePageIndex(l / width + 1);
-          mTabLayout.onPageScrolled(pageLastIndex, pageCurIndex, 1.0f * (l % width) / width);
-        } else {
-          changePageIndex(l / width + 1);
-          float rate = 1.0f * (l % width) / width - 1f;
-          //          log(
-          //              "///////////////////tab pos = "
-          //                  + mTabLayout.getPos()
-          //                  + ",pageLastIndex= "
-          //                  + pageLastIndex
-          //                  + ",pageCurIndex= "
-          //                  + pageCurIndex
-          //                  + ",rate= "
-          //                  + rate);
-          mTabLayout.onPageScrolled(pageLastIndex, pageCurIndex, rate);
-        }
+        mTabLayout.onPageScrolled(pageCurIndex, pageCurIndex - 1, 1.0f * (l % width) / width);
       }
-    } else if (deltaX < 0) {
-      changePageIndex(l / width);
-      if (l % width == 0) {
-        springBack = false;
-        mTabLayout.selectPos(pageCurIndex);
-      } else {
-        mTabLayout.onPageScrolled(
-            pageLastIndex, pageCurIndex, (springBack ? 1 : 0) + 1.0f * (l % width) / width);
-      }
-    }
-    log(
-        "///////deltaX= "
-            + deltaX
-            + "////////////pageLastIndex= "
-            + pageLastIndex
-            + ",pageCurIndex= "
-            + pageCurIndex);
-  }
-
-  private void changePageIndex(int cur) {
-    if (cur != pageCurIndex) {
-      pageLastIndex = pageCurIndex;
-      pageCurIndex = cur;
     }
   }
 }

@@ -28,7 +28,6 @@ public class HomePageView extends NestedScrollView {
   }
 
   boolean childIsTop = true;
-  boolean cancelScroll;
 
   public HomePageView(@NonNull Context context) {
     super(context);

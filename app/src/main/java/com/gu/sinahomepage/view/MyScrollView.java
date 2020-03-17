@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.ViewConfiguration;
 
 import androidx.core.widget.NestedScrollView;
 
@@ -32,6 +31,10 @@ public class MyScrollView extends NestedScrollView
   public MyScrollView(Context context, AttributeSet attrs) {
     super(context, attrs);
     setOnScrollChangeListener(this);
+    reflectionFlingMethod();
+  }
+
+  private void reflectionFlingMethod() {
     try {
       stopFlingMethod = getClass().getSuperclass().getDeclaredMethod(METHOD_NAME);
       stopFlingMethod.setAccessible(true);
