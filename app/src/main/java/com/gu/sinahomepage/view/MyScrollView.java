@@ -7,6 +7,7 @@ import android.view.MotionEvent;
 
 import androidx.core.widget.NestedScrollView;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -16,6 +17,7 @@ public class MyScrollView extends NestedScrollView
   int contentHeight;
   int scrollHeight;
   Method stopFlingMethod;
+  Field mIsBeingDragged;
   private static final String METHOD_NAME = "abortAnimatedScroll"; // 反射获取子类私有方法
 
   public void setScrollListener(ScrollListener scrollListener) {
@@ -39,6 +41,21 @@ public class MyScrollView extends NestedScrollView
       stopFlingMethod = getClass().getSuperclass().getDeclaredMethod(METHOD_NAME);
       stopFlingMethod.setAccessible(true);
     } catch (NoSuchMethodException e) {
+      e.printStackTrace();
+    }
+  }
+
+  /**
+   * 反射修改 mIsBeingDragged属性 当由scrollview scrollY=0时，调用该方法，继续拖拽拉伸顶部imgLayout平滑拉伸 防抖动！
+   *
+   * @param res
+   */
+  public void setField(Boolean res) {
+    try {
+      mIsBeingDragged = getClass().getSuperclass().getDeclaredField("mIsBeingDragged");
+      mIsBeingDragged.setAccessible(true);
+      mIsBeingDragged.set(this, res);
+    } catch (NoSuchFieldException | IllegalAccessException e) {
       e.printStackTrace();
     }
   }
@@ -76,6 +93,16 @@ public class MyScrollView extends NestedScrollView
         break;
     }
     return super.dispatchTouchEvent(ev);
+  }
+
+  @Override
+  public boolean onTouchEvent(MotionEvent ev) {
+    return super.onTouchEvent(ev);
+  }
+
+  @Override
+  public boolean onInterceptTouchEvent(MotionEvent ev) {
+    return super.onInterceptTouchEvent(ev);
   }
 
   @Override

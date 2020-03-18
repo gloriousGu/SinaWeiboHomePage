@@ -79,6 +79,7 @@ public class MyHorizontalScrollView extends HorizontalScrollView {
       case MotionEvent.ACTION_DOWN:
         break;
       case MotionEvent.ACTION_UP:
+        //取消掉horizontal本身的fling,让fling结束时的位置在整数页（简单viewpager实现）
         cancelSuperFling = true;
         int speedY = getFlingSpeed();
         super.onTouchEvent(ev);
@@ -87,7 +88,7 @@ public class MyHorizontalScrollView extends HorizontalScrollView {
           // do self fling!
           smoothScrollTo(calcPageIndexBySpeed(speedY), getScrollY());
         } else {
-          // spring back
+          // 拖动抬手时 spring back
           scrollByActionUP();
         }
         return true;

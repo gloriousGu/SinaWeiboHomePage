@@ -97,7 +97,7 @@ public class HomePageView extends NestedScrollView {
       case MotionEvent.ACTION_DOWN:
         mActivePointerId = ev.getPointerId(0);
         lastY = (int) ev.getY();
-        // 防抖动
+        // 防抖动：如果down事件发生时child的scroller未结束，会产生抖动现象，反射方式scroller强制finish
         childScrollView1.stopFling();
         childScrollView2.stopFling();
         childScrollView3.stopFling();
@@ -153,33 +153,6 @@ public class HomePageView extends NestedScrollView {
     consumed[1] = deltaYConsume(dy, type);
   }
 
-  @Override
-  public void onNestedScroll(
-      @NonNull View target,
-      int dxConsumed,
-      int dyConsumed,
-      int dxUnconsumed,
-      int dyUnconsumed,
-      int type,
-      @NonNull int[] consumed) {
-    super.onNestedScroll(
-        target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, type, consumed);
-    log(
-        "********dyUnconsumed= "
-            + dyUnconsumed
-            + ",dyConsumed= "
-            + dyConsumed
-            + ",consumed[1]= "
-            + consumed[1]
-            + ",childScrollView1.getScrollY()= "
-            + childScrollView1.getScrollY());
-    if (dyUnconsumed < 0 && childScrollView1.getScrollY() == 0 && type == ViewCompat.TYPE_TOUCH) {
-      scrollBy(0, dyUnconsumed);
-      consumed[1] = 0;
-      requestLayout();
-    }
-  }
-
   private void touchInImage(int dy) {
     if (dy < 0 && childIsTop) {
       final int scrollY = getScrollY();
@@ -215,22 +188,12 @@ public class HomePageView extends NestedScrollView {
         }
       } else if (scrollY == 0) {
         if (type == ViewCompat.TYPE_TOUCH) {
-          //          log("dy= " + dy);
+          log("setField!"); // caution!
+          childScrollView1.setField(false);
           stretchImg(imgLayout, -dy);
         }
       }
       return dy;
-    }
-    // add
-    else if (dy < 0 && childScrollView1.getScrollY() > 0 && childScrollView1.getScrollY() < -dy) {
-      int deltaY = dy + childScrollView1.getScrollY();
-      log(
-          "发生事件！需要拉伸scrollBy dy= "
-              + dy
-              + ", childScrollView1.getScrollY()= "
-              + childScrollView1.getScrollY());
-      //      scrollBy(0, deltaY);
-      //      return deltaY;
     } else if (dy > 0 && getStretchSize() > 0) {
       int res = Math.min(getStretchSize(), dy);
       stretchImg(imgLayout, -res);
@@ -239,9 +202,6 @@ public class HomePageView extends NestedScrollView {
       int res = Math.min(getScrollY() + dy, IMAGE_HEIGHT) - getScrollY();
       scrollBy(0, res);
       return res;
-    } else if (dy > 0 && topInvisible()) {
-      //      log("imgLayout height= " + imgLayout.getHeight());
-      //
     }
     return 0;
   }
@@ -262,22 +222,17 @@ public class HomePageView extends NestedScrollView {
     LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) img.getLayoutParams();
     params.height += dy;
     img.setLayoutParams(params);
-    //    log("params.height =" + params.height);
   }
 
   private void recoverImgSize() {
     LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) imgLayout.getLayoutParams();
     params.height = IMAGE_HEIGHT;
     imgLayout.setLayoutParams(params);
-    //    log("recover params.height =" + params.height);
   }
 
   @Override
   protected void onScrollChanged(int l, int t, int oldl, int oldt) {
     super.onScrollChanged(l, t, oldl, oldt);
-    //    if (l == 0) {
-    //      recoverImgSize();
-    //    }
   }
 
   public void log(String log) {
