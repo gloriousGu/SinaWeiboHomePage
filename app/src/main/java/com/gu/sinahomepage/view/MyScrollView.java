@@ -2,7 +2,6 @@ package com.gu.sinahomepage.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 
 import androidx.core.widget.NestedScrollView;
@@ -11,20 +10,15 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class MyScrollView extends NestedScrollView
-    implements NestedScrollView.OnScrollChangeListener {
+/**
+ * @author developergu
+ * @version v1.0.0
+ * @since 2020/3/19
+ */
+public class MyScrollView extends NestedScrollView {
 
-  int contentHeight;
-  int scrollHeight;
-  Method stopFlingMethod;
-  Field mIsBeingDragged;
+  private Method stopFlingMethod;
   private static final String METHOD_NAME = "abortAnimatedScroll"; // 反射获取子类私有方法
-
-  public void setScrollListener(ScrollListener scrollListener) {
-    this.mScrollListener = scrollListener;
-  }
-
-  private ScrollListener mScrollListener;
 
   public MyScrollView(Context context) {
     super(context);
@@ -32,7 +26,6 @@ public class MyScrollView extends NestedScrollView
 
   public MyScrollView(Context context, AttributeSet attrs) {
     super(context, attrs);
-    setOnScrollChangeListener(this);
     reflectionFlingMethod();
   }
 
@@ -52,7 +45,7 @@ public class MyScrollView extends NestedScrollView
    */
   public void setField(Boolean res) {
     try {
-      mIsBeingDragged = getClass().getSuperclass().getDeclaredField("mIsBeingDragged");
+      Field mIsBeingDragged = getClass().getSuperclass().getDeclaredField("mIsBeingDragged");
       mIsBeingDragged.setAccessible(true);
       mIsBeingDragged.set(this, res);
     } catch (NoSuchFieldException | IllegalAccessException e) {
@@ -60,9 +53,7 @@ public class MyScrollView extends NestedScrollView
     }
   }
 
-  /*
-  反射机制调用 NestedScrollView 的 abortAnimatedScroll()
-   */
+  /** 反射机制调用 NestedScrollView 的 abortAnimatedScroll() */
   public void stopFling() {
     try {
       stopFlingMethod.invoke(this);
@@ -71,7 +62,6 @@ public class MyScrollView extends NestedScrollView
     }
   }
 
-  /** 备注 */
   int lastX, lastY;
 
   @Override
@@ -103,37 +93,5 @@ public class MyScrollView extends NestedScrollView
   @Override
   public boolean onInterceptTouchEvent(MotionEvent ev) {
     return super.onInterceptTouchEvent(ev);
-  }
-
-  @Override
-  public void onScrollChange(
-      NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-    if (mScrollListener == null) return;
-    mScrollListener.onScroll(scrollY);
-
-    if (scrollY + scrollHeight >= contentHeight || contentHeight <= scrollHeight) {
-      mScrollListener.onScrollToBottom();
-    } else {
-      mScrollListener.notBottom();
-    }
-
-    if (scrollY == 0) {
-      mScrollListener.onScrollToTop();
-    }
-  }
-
-  @Override
-  protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-    contentHeight = getChildAt(0).getHeight();
-    scrollHeight = getHeight();
-  }
-
-  private boolean parentFoldTop() {
-    return ((HomePageView) getParent()).topInvisible();
-  }
-
-  public void log(String log) {
-    Log.e("SCROLL-TAG", "----" + log + "----");
   }
 }

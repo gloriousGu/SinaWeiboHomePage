@@ -38,7 +38,7 @@
                 app:textSize="14sp" />
         </FrameLayout>
 
-        <com.gu.sinahomepage.view.horizontalscroll.MyHorizontalScrollView
+        <com.gu.sinahomepage.view.horizontalscroll.HomePageHorScrollView
             android:id="@+id/horizontalScrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -52,7 +52,8 @@
                 <com.gu.sinahomepage.view.MyScrollView
                     android:id="@+id/scrollView1"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:tag="sv1">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -89,7 +90,8 @@
                 <com.gu.sinahomepage.view.MyScrollView
                     android:id="@+id/scrollView2"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:tag="sv2">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -126,7 +128,8 @@
                 <com.gu.sinahomepage.view.MyScrollView
                     android:id="@+id/scrollView3"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:tag="sv3">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -160,6 +163,6 @@
                     </LinearLayout>
                 </com.gu.sinahomepage.view.MyScrollView>
             </LinearLayout>
-        </com.gu.sinahomepage.view.horizontalscroll.MyHorizontalScrollView>
+        </com.gu.sinahomepage.view.horizontalscroll.HomePageHorScrollView>
     </LinearLayout>
 </com.gu.sinahomepage.view.HomePageView>

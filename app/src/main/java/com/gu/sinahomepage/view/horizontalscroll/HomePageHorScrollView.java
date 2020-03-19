@@ -5,18 +5,27 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.gu.indicatorwidget.TabLayout;
 import com.gu.sinahomepage.view.HomePageView;
+import com.gu.sinahomepage.view.MyScrollView;
 
 import java.lang.reflect.Field;
 
-public class MyHorizontalScrollView extends HorizontalScrollView {
-  private static final String TAG = MyHorizontalScrollView.class.getSimpleName();
+/**
+ * @author developergu
+ * @version v1.0.0
+ * @since 2020/3/19
+ */
+public class HomePageHorScrollView extends HorizontalScrollView {
+  private static final String TAG = HomePageHorScrollView.class.getSimpleName();
 
   TabLayout mTabLayout;
   private boolean cancelSuperFling;
@@ -24,12 +33,59 @@ public class MyHorizontalScrollView extends HorizontalScrollView {
   int pageCurIndex;
   int pageSize;
 
-  public MyHorizontalScrollView(@NonNull Context context) {
+  MyScrollView currentScrollView;
+
+  public HomePageHorScrollView(@NonNull Context context) {
     super(context);
   }
 
-  public MyHorizontalScrollView(@NonNull Context context, @Nullable AttributeSet attrs) {
+  public HomePageHorScrollView(@NonNull Context context, @Nullable AttributeSet attrs) {
     super(context, attrs);
+    init();
+  }
+
+  private void init() {
+    post(
+        new Runnable() {
+          @Override
+          public void run() {
+            HomePageView homePageView = (HomePageView) getParent().getParent();
+            log("height= " + homePageView.getMeasuredHeight());
+            int height = homePageView.getMeasuredHeight();
+            int width = homePageView.getMeasuredWidth();
+
+            initSize(HomePageHorScrollView.this, width, height);
+            initScrollItemSize(width, height);
+            updateCurrentScrollView(0);
+          }
+        });
+  }
+
+  private void initSize(View view, int width, int height) {
+    LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) view.getLayoutParams();
+    params.height = height;
+    params.width = width;
+    view.setLayoutParams(params);
+  }
+
+  private void initScrollItemSize(int width, int height) {
+    ViewGroup viewGroup = (ViewGroup) getChildAt(0);
+    final int count = viewGroup.getChildCount();
+    for (int i = 0; i < count; i++) {
+      initSize(viewGroup.getChildAt(i), width, height);
+    }
+  }
+
+  public boolean childScroll2Top() {
+    return currentScrollView.getScrollY() == 0;
+  }
+
+  public void changeDraggingField(Boolean value) {
+    currentScrollView.setField(value);
+  }
+
+  private void updateCurrentScrollView(int pos) {
+    currentScrollView = (MyScrollView) ((ViewGroup) getChildAt(0)).getChildAt(pos);
   }
 
   public void bindTabLayout(TabLayout tabLayout) {
@@ -49,12 +105,18 @@ public class MyHorizontalScrollView extends HorizontalScrollView {
     return 0;
   }
 
+  public void stopChildViewFling() {
+    ViewGroup viewGroup = (ViewGroup) getChildAt(0);
+    for (int i = 0; i < viewGroup.getChildCount(); i++) {
+      ((MyScrollView) viewGroup.getChildAt(i)).stopFling();
+    }
+  }
+
   @Override
   public boolean dispatchTouchEvent(MotionEvent ev) {
     return super.dispatchTouchEvent(ev);
   }
 
-  /** 备注 */
   boolean res;
 
   @Override
@@ -79,7 +141,7 @@ public class MyHorizontalScrollView extends HorizontalScrollView {
       case MotionEvent.ACTION_DOWN:
         break;
       case MotionEvent.ACTION_UP:
-        //取消掉horizontal本身的fling,让fling结束时的位置在整数页（简单viewpager实现）
+        // 取消掉horizontal本身的fling,让fling结束时的停留位置在整数页（简单viewpager实现）
         cancelSuperFling = true;
         int speedY = getFlingSpeed();
         super.onTouchEvent(ev);
@@ -139,6 +201,7 @@ public class MyHorizontalScrollView extends HorizontalScrollView {
     if (l % width == 0) {
       pageCurIndex = l / width;
       mTabLayout.selectPos(pageCurIndex);
+      updateCurrentScrollView(pageCurIndex);
     } else {
       int deltaX = l - pageCurIndex * width;
       if (deltaX > 0) {
