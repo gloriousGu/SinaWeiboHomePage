@@ -26,6 +26,7 @@ public class HomePageView extends NestedScrollView {
   int IMAGE_HEIGHT;
   FrameLayout imgLayout;
   HomePageHorScrollView horizontalScrollView;
+  boolean test = false;
 
   public HomePageView(@NonNull Context context) {
     super(context);
@@ -107,10 +108,29 @@ public class HomePageView extends NestedScrollView {
   }
 
   @Override
+  public void onNestedScroll(
+      @NonNull View target,
+      int dxConsumed,
+      int dyConsumed,
+      int dxUnconsumed,
+      int dyUnconsumed,
+      int type,
+      @NonNull int[] consumed) {
+    super.onNestedScroll(
+        target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, type, consumed);
+    if (test) {
+      if (dyUnconsumed < 0 && horizontalScrollView.childScroll2Top() && getScrollY() == 0) {
+        stretchImg(imgLayout, -dyUnconsumed);
+        //        consumed[1] = 0;
+      }
+    }
+  }
+
+  @Override
   public void onNestedPreScroll(
       @NonNull View target, int dx, int dy, @NonNull int[] consumed, int type) {
     super.onNestedPreScroll(target, dx, dy, consumed, type);
-    consumed[1] = deltaYConsume(dy, type);
+    consumed[1] = deltaYConsume(target, dy, type);
   }
 
   private void touchInImage(int dy) {
@@ -130,7 +150,9 @@ public class HomePageView extends NestedScrollView {
     }
   }
 
-  private int deltaYConsume(int dy, int type) {
+  int[] offsetInWindow = new int[2];
+
+  private int deltaYConsume(View target, int dy, int type) {
     if (dy < 0 && horizontalScrollView.childScroll2Top()) {
       // img need to stretch
       final int scrollY = getScrollY();
@@ -152,7 +174,8 @@ public class HomePageView extends NestedScrollView {
            * caution!
            * 垂直滚动scrollview进行内部滚动后，再次控制外部HomePageView滚动拉伸imgLayout会产生抖动，让 mIsBeingDragged=false!
            */
-          horizontalScrollView.changeDraggingField(false);
+          log("caution!");
+          //          horizontalScrollView.changeDraggingField(false);
           stretchImg(imgLayout, -dy);
         }
       }

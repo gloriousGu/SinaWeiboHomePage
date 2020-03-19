@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.gu.indicatorwidget.TabLayout;
 import com.gu.sinahomepage.view.horizontalscroll.HomePageHorScrollView;
 
-public class MainViewPagerActivity extends AppCompatActivity {
+public class ScrollViewActivity extends AppCompatActivity {
   private static final String[] titles = {"第一页", "第二页", "第三页"};
 
   @Override

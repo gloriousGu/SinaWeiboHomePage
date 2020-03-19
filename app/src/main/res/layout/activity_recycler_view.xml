@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.gu.sinahomepage.view.HomePageView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:id="@+id/imglayout"
+            android:layout_width="match_parent"
+            android:layout_height="150dp">
+
+            <ImageView
+                android:id="@+id/image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:src="@mipmap/topimage" />
+
+
+            <com.gu.indicatorwidget.TabLayout
+                android:id="@+id/tab"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_gravity="bottom"
+                android:background="#fff"
+                android:paddingLeft="50dp"
+                android:paddingRight="50dp"
+                app:margin="24dp"
+                app:rd="8dp"
+                app:textColor="@color/text_state_color"
+                app:textSize="14sp" />
+        </FrameLayout>
+
+        <com.gu.sinahomepage.view.horizontalscroll.HomePageHorScrollView
+            android:id="@+id/horizontalScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/contentlayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.gu.sinahomepage.view.horizontalscroll.content.impl.MyRecyclerView
+                    android:id="@+id/rv1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:tag="sv1" />
+
+                <com.gu.sinahomepage.view.horizontalscroll.content.impl.MyRecyclerView
+                    android:id="@+id/rv2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:tag="sv2" />
+
+
+                <com.gu.sinahomepage.view.horizontalscroll.content.impl.MyRecyclerView
+                    android:id="@+id/rv3"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:tag="sv3" />
+
+            </LinearLayout>
+        </com.gu.sinahomepage.view.horizontalscroll.HomePageHorScrollView>
+    </LinearLayout>
+</com.gu.sinahomepage.view.HomePageView>

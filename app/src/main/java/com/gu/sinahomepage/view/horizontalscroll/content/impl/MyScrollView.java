@@ -1,10 +1,13 @@
-package com.gu.sinahomepage.view;
+package com.gu.sinahomepage.view.horizontalscroll.content.impl;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 
 import androidx.core.widget.NestedScrollView;
+
+import com.gu.sinahomepage.view.horizontalscroll.content.ScrollItem;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -15,7 +18,7 @@ import java.lang.reflect.Method;
  * @version v1.0.0
  * @since 2020/3/19
  */
-public class MyScrollView extends NestedScrollView {
+public class MyScrollView extends NestedScrollView implements ScrollItem {
 
   private Method stopFlingMethod;
   private static final String METHOD_NAME = "abortAnimatedScroll"; // 反射获取子类私有方法
@@ -43,23 +46,32 @@ public class MyScrollView extends NestedScrollView {
    *
    * @param res
    */
+  @Override
   public void setField(Boolean res) {
     try {
       Field mIsBeingDragged = getClass().getSuperclass().getDeclaredField("mIsBeingDragged");
       mIsBeingDragged.setAccessible(true);
       mIsBeingDragged.set(this, res);
     } catch (NoSuchFieldException | IllegalAccessException e) {
+      Log.e("TAG", "-----反射异常 1!-----");
       e.printStackTrace();
     }
   }
 
   /** 反射机制调用 NestedScrollView 的 abortAnimatedScroll() */
+  @Override
   public void stopFling() {
     try {
       stopFlingMethod.invoke(this);
     } catch (IllegalAccessException | InvocationTargetException e) {
+      Log.e("TAG", "-----反射异常 2!-----");
       e.printStackTrace();
     }
+  }
+
+  @Override
+  public boolean scroll2Top() {
+    return getScrollY() == 0;
   }
 
   int lastX, lastY;

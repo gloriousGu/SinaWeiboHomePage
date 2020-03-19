@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
 
 import com.gu.indicatorwidget.TabLayout;
 import com.gu.sinahomepage.view.HomePageView;
-import com.gu.sinahomepage.view.MyScrollView;
+import com.gu.sinahomepage.view.horizontalscroll.content.ScrollItem;
 
 import java.lang.reflect.Field;
 
@@ -33,7 +33,7 @@ public class HomePageHorScrollView extends HorizontalScrollView {
   int pageCurIndex;
   int pageSize;
 
-  MyScrollView currentScrollView;
+  ScrollItem currentItem;
 
   public HomePageHorScrollView(@NonNull Context context) {
     super(context);
@@ -77,15 +77,15 @@ public class HomePageHorScrollView extends HorizontalScrollView {
   }
 
   public boolean childScroll2Top() {
-    return currentScrollView.getScrollY() == 0;
+    return currentItem.scroll2Top();
   }
 
   public void changeDraggingField(Boolean value) {
-    currentScrollView.setField(value);
+    currentItem.setField(value);
   }
 
   private void updateCurrentScrollView(int pos) {
-    currentScrollView = (MyScrollView) ((ViewGroup) getChildAt(0)).getChildAt(pos);
+    currentItem = (ScrollItem) ((ViewGroup) getChildAt(0)).getChildAt(pos);
   }
 
   public void bindTabLayout(TabLayout tabLayout) {
@@ -108,7 +108,7 @@ public class HomePageHorScrollView extends HorizontalScrollView {
   public void stopChildViewFling() {
     ViewGroup viewGroup = (ViewGroup) getChildAt(0);
     for (int i = 0; i < viewGroup.getChildCount(); i++) {
-      ((MyScrollView) viewGroup.getChildAt(i)).stopFling();
+      ((ScrollItem) viewGroup.getChildAt(i)).stopFling();
     }
   }
 
