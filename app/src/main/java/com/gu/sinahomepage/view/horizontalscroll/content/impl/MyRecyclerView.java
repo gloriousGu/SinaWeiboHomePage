@@ -11,10 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.gu.sinahomepage.view.HomePageView;
 import com.gu.sinahomepage.view.horizontalscroll.content.ScrollItem;
-
-import java.lang.reflect.Field;
 
 public class MyRecyclerView extends RecyclerView implements ScrollItem {
   public MyRecyclerView(@NonNull Context context) {
@@ -58,25 +55,16 @@ public class MyRecyclerView extends RecyclerView implements ScrollItem {
   }
 
   @Override
-  public void setField(Boolean res) {
-    //    try {
-    //      Field mScrollState = getClass().getSuperclass().getDeclaredField("mScrollState");
-    //      mScrollState.setAccessible(true);
-    //      if (!res) {
-    //        mScrollState.set(this, SCROLL_STATE_IDLE);
-    //      }
-    //    } catch (NoSuchFieldException | IllegalAccessException e) {
-    //      Log.e("TAG", "-----反射异常 1!-----");
-    //      e.printStackTrace();
-    //    }
-  }
-
-  @Override
   public void stopFling() {}
 
   @Override
-  public boolean scroll2Top() {
+  public boolean isTop() {
     return getScrollYDistance() == 0;
+  }
+
+  @Override
+  public void scrollDy(int dy) {
+    scrollBy(0, dy);
   }
 
   private int getScrollYDistance() {

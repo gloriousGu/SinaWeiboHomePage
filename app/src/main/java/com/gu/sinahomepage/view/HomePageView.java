@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,7 +25,6 @@ public class HomePageView extends NestedScrollView {
   int IMAGE_HEIGHT;
   FrameLayout imgLayout;
   HomePageHorScrollView horizontalScrollView;
-  boolean test = false;
 
   public HomePageView(@NonNull Context context) {
     super(context);
@@ -108,29 +106,10 @@ public class HomePageView extends NestedScrollView {
   }
 
   @Override
-  public void onNestedScroll(
-      @NonNull View target,
-      int dxConsumed,
-      int dyConsumed,
-      int dxUnconsumed,
-      int dyUnconsumed,
-      int type,
-      @NonNull int[] consumed) {
-    super.onNestedScroll(
-        target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, type, consumed);
-    if (test) {
-      if (dyUnconsumed < 0 && horizontalScrollView.childScroll2Top() && getScrollY() == 0) {
-        stretchImg(imgLayout, -dyUnconsumed);
-        //        consumed[1] = 0;
-      }
-    }
-  }
-
-  @Override
   public void onNestedPreScroll(
       @NonNull View target, int dx, int dy, @NonNull int[] consumed, int type) {
     super.onNestedPreScroll(target, dx, dy, consumed, type);
-    consumed[1] = deltaYConsume(target, dy, type);
+    consumed[1] = deltaYConsume(dy, type);
   }
 
   private void touchInImage(int dy) {
@@ -139,20 +118,23 @@ public class HomePageView extends NestedScrollView {
       if (scrollY > 0) {
         int res = scrollY + dy;
         if (res < 0) {
-          stretchImg(imgLayout, -res);
+          stretch(-res);
         }
       } else if (scrollY == 0) {
-        stretchImg(imgLayout, -dy);
+        stretch(-dy);
+      }
+    } else if (dy < 0 && !horizontalScrollView.childScroll2Top()) {
+      final int scrollY = getScrollY();
+      if (scrollY == 0) {
+        horizontalScrollView.scrollCurrentChildDy(dy);
       }
     } else if (dy > 0 && getStretchSize() > 0) {
       int res = Math.min(getStretchSize(), dy);
-      stretchImg(imgLayout, -res);
+      stretch(-res);
     }
   }
 
-  int[] offsetInWindow = new int[2];
-
-  private int deltaYConsume(View target, int dy, int type) {
+  private int deltaYConsume(int dy, int type) {
     if (dy < 0 && horizontalScrollView.childScroll2Top()) {
       // img need to stretch
       final int scrollY = getScrollY();
@@ -162,7 +144,7 @@ public class HomePageView extends NestedScrollView {
           scrollBy(0, dy);
         } else if (res < 0) {
           if (type == ViewCompat.TYPE_TOUCH) {
-            stretchImg(imgLayout, -res);
+            stretch(-res);
           }
           scrollTo(0, 0);
         } else {
@@ -170,19 +152,14 @@ public class HomePageView extends NestedScrollView {
         }
       } else if (scrollY == 0) {
         if (type == ViewCompat.TYPE_TOUCH) {
-          /*
-           * caution!
-           * 垂直滚动scrollview进行内部滚动后，再次控制外部HomePageView滚动拉伸imgLayout会产生抖动，让 mIsBeingDragged=false!
-           */
-          log("caution!");
-          //          horizontalScrollView.changeDraggingField(false);
-          stretchImg(imgLayout, -dy);
+          // 拉伸stretch
+          stretch(-dy);
         }
       }
       return dy;
     } else if (dy > 0 && getStretchSize() > 0) {
       int res = Math.min(getStretchSize(), dy);
-      stretchImg(imgLayout, -res);
+      stretch(-res);
       return res;
     } else if (dy > 0 && getStretchSize() == 0 && topVisible()) {
       int res = Math.min(getScrollY() + dy, IMAGE_HEIGHT) - getScrollY();
@@ -204,21 +181,26 @@ public class HomePageView extends NestedScrollView {
     return imgLayout.getHeight() - IMAGE_HEIGHT;
   }
 
-  private void stretchImg(View img, int dy) {
-    LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) img.getLayoutParams();
-    params.height += dy;
-    img.setLayoutParams(params);
+  /**
+   * 拉伸并移动horizontalScrollView
+   *
+   * @param dy deltaY
+   */
+  private void stretch(int dy) {
+    imgLayout.layout(0, 0, imgLayout.getWidth(), imgLayout.getBottom() + dy);
+    horizontalScrollView.setTranslationY(horizontalScrollView.getTranslationY() + dy);
   }
 
+  /** 还原拉伸 */
   private void recoverImgSize() {
-    LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) imgLayout.getLayoutParams();
-    params.height = IMAGE_HEIGHT;
-    imgLayout.setLayoutParams(params);
+    imgLayout.layout(0, 0, imgLayout.getWidth(), IMAGE_HEIGHT);
+    horizontalScrollView.setTranslationY(0);
   }
 
   @Override
   protected void onScrollChanged(int l, int t, int oldl, int oldt) {
     super.onScrollChanged(l, t, oldl, oldt);
+    log("get top = " + imgLayout.getTop());
   }
 
   public void log(String log) {

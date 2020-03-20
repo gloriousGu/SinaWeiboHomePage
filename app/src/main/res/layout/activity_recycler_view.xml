@@ -7,8 +7,9 @@
     tools:context=".MainActivity">
 
     <LinearLayout
+        android:id="@+id/home_page_view_content"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:focusable="true"
         android:focusableInTouchMode="true"
         android:orientation="vertical">
@@ -16,14 +17,8 @@
         <FrameLayout
             android:id="@+id/imglayout"
             android:layout_width="match_parent"
-            android:layout_height="150dp">
-
-            <ImageView
-                android:id="@+id/image"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="fitXY"
-                android:src="@mipmap/topimage" />
+            android:layout_height="150dp"
+            android:background="@mipmap/topimage">
 
 
             <com.gu.indicatorwidget.TabLayout
@@ -43,7 +38,7 @@
         <com.gu.sinahomepage.view.horizontalscroll.HomePageHorScrollView
             android:id="@+id/horizontalScrollView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
 
             <LinearLayout
                 android:id="@+id/contentlayout"

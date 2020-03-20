@@ -77,11 +77,11 @@ public class HomePageHorScrollView extends HorizontalScrollView {
   }
 
   public boolean childScroll2Top() {
-    return currentItem.scroll2Top();
+    return currentItem.isTop();
   }
 
-  public void changeDraggingField(Boolean value) {
-    currentItem.setField(value);
+  public void scrollCurrentChildDy(int dy) {
+    currentItem.scrollDy(dy);
   }
 
   private void updateCurrentScrollView(int pos) {
