@@ -1,10 +1,13 @@
 package com.gu.sinahomepage;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.gu.indicatorwidget.TabLayout;
+import com.gu.sinahomepage.view.tab.TabLayout;
 import com.gu.sinahomepage.view.horizontalscroll.HomePageHorScrollView;
 
 public class ScrollViewActivity extends AppCompatActivity {
@@ -18,5 +21,9 @@ public class ScrollViewActivity extends AppCompatActivity {
     tabLayout.createContentByTitles(titles).combine();
     HomePageHorScrollView horizontalScrollView = findViewById(R.id.horizontalScrollView);
     horizontalScrollView.bindTabLayout(tabLayout);
+  }
+
+  public void textClick(View view) {
+    Log.e("TAG", "textClick: ! ---- " + ((TextView) view).getText());
   }
 }

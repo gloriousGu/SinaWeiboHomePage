@@ -2,6 +2,6 @@
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="200dp"
-    android:gravity="center_vertical"
+    android:gravity="center"
     android:textColor="#ff1744"
-    android:textSize="12sp" />
+    android:textSize="16sp" />

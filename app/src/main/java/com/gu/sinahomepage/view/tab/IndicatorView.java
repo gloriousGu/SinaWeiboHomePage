@@ -1,4 +1,4 @@
-package com.gu.indicatorwidget;
+package com.gu.sinahomepage.view.tab;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
@@ -41,11 +41,11 @@ public class IndicatorView extends View {
     mScroller = new Scroller(context);
     mRect = new RectF();
     if (attrs != null) {
-      TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.IndicatorView);
-      num = a.getInt(R.styleable.IndicatorView_num, 4);
-      rd = a.getDimensionPixelOffset(R.styleable.IndicatorView_rd, 10);
-      margin = a.getDimensionPixelOffset(R.styleable.IndicatorView_margin, 80);
-      p.setColor(a.getColor(R.styleable.IndicatorView_bg_color, Color.RED));
+      TypedArray a = context.obtainStyledAttributes(attrs, com.gu.sinahomepage.R.styleable.IndicatorView);
+      num = a.getInt(com.gu.sinahomepage.R.styleable.IndicatorView_num, 4);
+      rd = a.getDimensionPixelOffset(com.gu.sinahomepage.R.styleable.IndicatorView_rd, 10);
+      margin = a.getDimensionPixelOffset(com.gu.sinahomepage.R.styleable.IndicatorView_margin, 80);
+      p.setColor(a.getColor(com.gu.sinahomepage.R.styleable.IndicatorView_bg_color, Color.RED));
       a.recycle();
     } else {
       num = 4;

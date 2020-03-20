@@ -7,14 +7,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.gu.indicatorwidget.TabLayout;
+import com.gu.sinahomepage.view.tab.TabLayout;
 import com.gu.sinahomepage.view.horizontalscroll.HomePageHorScrollView;
-import com.gu.sinahomepage.view.horizontalscroll.content.impl.MyLinearLayoutManager;
 import com.gu.sinahomepage.view.horizontalscroll.content.impl.MyRecyclerView;
 
 import java.util.ArrayList;
@@ -41,17 +41,10 @@ public class RecyclerViewActivity extends AppCompatActivity {
     rv1 = findViewById(R.id.rv1);
     rv2 = findViewById(R.id.rv2);
     rv3 = findViewById(R.id.rv3);
-    LinearLayoutManager l1 = new MyLinearLayoutManager(this);
-    LinearLayoutManager l2 = new MyLinearLayoutManager(this);
-    LinearLayoutManager l3 = new MyLinearLayoutManager(this);
 
-    l1.setOrientation(RecyclerView.VERTICAL);
-    l2.setOrientation(RecyclerView.VERTICAL);
-    l3.setOrientation(RecyclerView.VERTICAL);
-
-    rv1.setLayoutManager(l1);
-    rv2.setLayoutManager(l2);
-    rv3.setLayoutManager(l3);
+    rv1.setLayoutManager(new LinearLayoutManager(this));
+    rv2.setLayoutManager(new LinearLayoutManager(this));
+    rv3.setLayoutManager(new LinearLayoutManager(this));
 
     rv1.setAdapter(new DataAdapter(this));
     rv2.setAdapter(new DataAdapter(this));
@@ -85,6 +78,13 @@ public class RecyclerViewActivity extends AppCompatActivity {
     class ViewHolder extends RecyclerView.ViewHolder {
       ViewHolder(@NonNull View itemView) {
         super(itemView);
+        itemView.setOnClickListener(
+            new View.OnClickListener() {
+              @Override
+              public void onClick(View v) {
+                Log.e("TAG", "onClick: " + getAdapterPosition());
+              }
+            });
       }
     }
   }

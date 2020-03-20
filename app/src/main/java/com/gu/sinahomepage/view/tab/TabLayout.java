@@ -1,4 +1,4 @@
-package com.gu.indicatorwidget;
+package com.gu.sinahomepage.view.tab;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -11,18 +11,20 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.viewpager.widget.ViewPager;
+
+import com.gu.sinahomepage.view.horizontalscroll.HomePageHorScrollView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class TabLayout extends FrameLayout {
+public class TabLayout extends FrameLayout implements View.OnClickListener {
 
   private ColorStateList csl;
 
@@ -36,7 +38,7 @@ public class TabLayout extends FrameLayout {
   private LinearLayout mContentLayout;
   private IndicatorView mIndicatorView;
   //    private ViewPager viewPager;
-
+  private HomePageHorScrollView horiScrollView;
   private int startPos;
   private boolean clicked;
 
@@ -96,21 +98,21 @@ public class TabLayout extends FrameLayout {
   //    }
   //  }
 
-  //  @Override
-  //  public void onClick(View v) {
-  //    if (viewPager == null || mIndicatorView == null) return;
-  //    int to = (Integer) v.getTag();
-  //    int from = viewPager.getCurrentItem();
-  //    viewPager.setCurrentItem(to, true);
-  //    clicked = true;
-  //    if (isOffsetTwo(from, to)) {
-  //      mIndicatorView.setCurrent(to);
-  //    } else if (toRight(from, to)) {
-  //      mIndicatorView.indicator2Right();
-  //    } else if (toLeft(from, to)) {
-  //      mIndicatorView.indicator2Left();
-  //    }
-  //  }
+  @Override
+  public void onClick(View v) {
+    if (horiScrollView == null || mIndicatorView == null) return;
+    int to = (Integer) v.getTag();
+    int from = horiScrollView.getCurrentItemPos();
+    horiScrollView.setCurrentItem(to);
+    clicked = true;
+    if (isOffsetTwo(from, to)) {
+      mIndicatorView.setCurrent(to);
+    } else if (toRight(from, to)) {
+      mIndicatorView.indicator2Right();
+    } else if (toLeft(from, to)) {
+      mIndicatorView.indicator2Left();
+    }
+  }
 
   // 滚动跨度超过两个
   private boolean isOffsetTwo(int from, int to) {
@@ -142,21 +144,27 @@ public class TabLayout extends FrameLayout {
   public TabLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
     super(context, attrs);
     textSize = 14;
-    csl = getResources().getColorStateList(R.color.text_state_color);
+    csl = getResources().getColorStateList(com.gu.sinahomepage.R.color.text_state_color);
     margin = 80;
     mIndicatorColor = Color.RED;
     rd = 10;
-    int minHeight = context.getResources().getDimensionPixelOffset(R.dimen.min_tab_layout_height);
+    int minHeight =
+        context
+            .getResources()
+            .getDimensionPixelOffset(com.gu.sinahomepage.R.dimen.min_tab_layout_height);
     if (attrs != null) {
-      TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TabLayout);
-      mIndicatorColor = a.getColor(R.styleable.TabLayout_indicatorColor, Color.RED);
-      csl = a.getColorStateList(R.styleable.TabLayout_textColor);
+      TypedArray a =
+          context.obtainStyledAttributes(attrs, com.gu.sinahomepage.R.styleable.TabLayout);
+      mIndicatorColor =
+          a.getColor(com.gu.sinahomepage.R.styleable.TabLayout_indicatorColor, Color.RED);
+      csl = a.getColorStateList(com.gu.sinahomepage.R.styleable.TabLayout_textColor);
       if (csl == null) {
-        csl = getResources().getColorStateList(R.color.text_state_color);
+        csl = getResources().getColorStateList(com.gu.sinahomepage.R.color.text_state_color);
       }
-      textSize = px2sp(context, a.getDimension(R.styleable.TabLayout_textSize, 14));
-      margin = a.getDimensionPixelOffset(R.styleable.TabLayout_margin, 80);
-      rd = a.getDimensionPixelOffset(R.styleable.TabLayout_rd, 2);
+      textSize =
+          px2sp(context, a.getDimension(com.gu.sinahomepage.R.styleable.TabLayout_textSize, 14));
+      margin = a.getDimensionPixelOffset(com.gu.sinahomepage.R.styleable.TabLayout_margin, 80);
+      rd = a.getDimensionPixelOffset(com.gu.sinahomepage.R.styleable.TabLayout_rd, 2);
       a.recycle();
     }
     mTitles = new ArrayList<>();
@@ -174,6 +182,10 @@ public class TabLayout extends FrameLayout {
   //    viewPager = vp;
   //    return this;
   //  }
+
+  public void setHorizontalView(HomePageHorScrollView horiScrollView) {
+    this.horiScrollView = horiScrollView;
+  }
 
   /**
    * 用titles数组创建TabLayout（ 更新标题时调用）
@@ -309,11 +321,12 @@ public class TabLayout extends FrameLayout {
       textView.setGravity(Gravity.CENTER);
       textView.setText(mTitles.get(i));
       textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+      // 每个textView增加tag
       textView.setTag(i);
       textView.setTextColor(csl);
 
       /** 此处先取消点击事件 */
-      //      textView.setOnClickListener(this);
+      textView.setOnClickListener(this);
       if (i == 0) textView.setSelected(true);
       mContentLayout.addView(textView);
     }

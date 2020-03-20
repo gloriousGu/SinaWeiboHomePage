@@ -109,11 +109,14 @@ public class HomePageView extends NestedScrollView {
   public void onNestedPreScroll(
       @NonNull View target, int dx, int dy, @NonNull int[] consumed, int type) {
     super.onNestedPreScroll(target, dx, dy, consumed, type);
+    if (target instanceof HomePageHorScrollView) {
+      log("target is HomePageHorScrollView !");
+    }
     consumed[1] = deltaYConsume(dy, type);
   }
 
   private void touchInImage(int dy) {
-    if (dy < 0 && horizontalScrollView.childScroll2Top()) {
+    if (dy < 0 && canStretch()) {
       final int scrollY = getScrollY();
       if (scrollY > 0) {
         int res = scrollY + dy;
@@ -135,7 +138,7 @@ public class HomePageView extends NestedScrollView {
   }
 
   private int deltaYConsume(int dy, int type) {
-    if (dy < 0 && horizontalScrollView.childScroll2Top()) {
+    if (dy < 0 && canStretch()) {
       // img need to stretch
       final int scrollY = getScrollY();
       if (scrollY > 0) {
@@ -169,6 +172,15 @@ public class HomePageView extends NestedScrollView {
     return 0;
   }
 
+  /**
+   * 是否可以拉伸
+   *
+   * @return res
+   */
+  private boolean canStretch() {
+    return horizontalScrollView.childScroll2Top() && !horizontalScrollView.isHorDragging();
+  }
+
   private boolean topVisible() {
     return getScrollY() < IMAGE_HEIGHT;
   }
@@ -200,7 +212,6 @@ public class HomePageView extends NestedScrollView {
   @Override
   protected void onScrollChanged(int l, int t, int oldl, int oldt) {
     super.onScrollChanged(l, t, oldl, oldt);
-    log("get top = " + imgLayout.getTop());
   }
 
   public void log(String log) {

@@ -13,7 +13,7 @@ import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.gu.indicatorwidget.TabLayout;
+import com.gu.sinahomepage.view.tab.TabLayout;
 import com.gu.sinahomepage.view.HomePageView;
 import com.gu.sinahomepage.view.horizontalscroll.content.ScrollItem;
 
@@ -56,7 +56,7 @@ public class HomePageHorScrollView extends HorizontalScrollView {
 
             initSize(HomePageHorScrollView.this, width, height);
             initScrollItemSize(width, height);
-            updateCurrentScrollView(0);
+            updateCurrentChild(0);
           }
         });
   }
@@ -84,12 +84,26 @@ public class HomePageHorScrollView extends HorizontalScrollView {
     currentItem.scrollDy(dy);
   }
 
-  private void updateCurrentScrollView(int pos) {
+  public boolean isHorDragging() {
+    return isHorDragging;
+  }
+
+  private void updateCurrentChild(int pos) {
     currentItem = (ScrollItem) ((ViewGroup) getChildAt(0)).getChildAt(pos);
   }
 
   public void bindTabLayout(TabLayout tabLayout) {
     this.mTabLayout = tabLayout;
+    mTabLayout.setHorizontalView(this);
+  }
+
+  public void setCurrentItem(int to) {
+    if (to == pageCurIndex) return;
+    smoothScrollTo(pageCurIndex * getWidth(), getScrollY());
+  }
+
+  public int getCurrentItemPos() {
+    return pageCurIndex;
   }
 
   private int getFlingSpeed() {
@@ -124,10 +138,11 @@ public class HomePageHorScrollView extends HorizontalScrollView {
     super.onInterceptTouchEvent(ev);
     switch (ev.getAction()) {
       case MotionEvent.ACTION_DOWN:
-        res = true;
+        res = true; // 重置res
         return false;
       case MotionEvent.ACTION_MOVE:
         int stretchSize = ((HomePageView) getParent().getParent()).getStretchSize();
+        // 拉伸状态禁止 水平滚动
         if (stretchSize > 0) {
           res = false;
         }
@@ -194,6 +209,8 @@ public class HomePageHorScrollView extends HorizontalScrollView {
     Log.e(TAG, "----" + log + "----");
   }
 
+  boolean isHorDragging;
+
   @Override
   protected void onScrollChanged(int l, int t, int oldl, int oldt) {
     super.onScrollChanged(l, t, oldl, oldt);
@@ -201,8 +218,10 @@ public class HomePageHorScrollView extends HorizontalScrollView {
     if (l % width == 0) {
       pageCurIndex = l / width;
       mTabLayout.selectPos(pageCurIndex);
-      updateCurrentScrollView(pageCurIndex);
+      updateCurrentChild(pageCurIndex);
+      isHorDragging = false;
     } else {
+      isHorDragging = true;
       int deltaX = l - pageCurIndex * width;
       if (deltaX > 0) {
         mTabLayout.onPageScrolled(pageCurIndex, pageCurIndex + 1, 1.0f * (l % width) / width);
