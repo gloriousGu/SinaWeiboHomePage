@@ -5,7 +5,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,7 +12,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.widget.NestedScrollView;
 
 import com.gu.sinahomepage.R;
-import com.gu.sinahomepage.view.horizontalscroll.HomePageHorScrollView;
+import com.gu.sinahomepage.view.bottom.BottomView;
+import com.gu.sinahomepage.view.top.TopView;
 
 /**
  * @author developergu
@@ -22,9 +22,8 @@ import com.gu.sinahomepage.view.horizontalscroll.HomePageHorScrollView;
  */
 public class HomePageView extends NestedScrollView {
 
-  int IMAGE_HEIGHT;
-  FrameLayout imgLayout;
-  HomePageHorScrollView horizontalScrollView;
+  TopView topView;
+  BottomView bottomView;
 
   public HomePageView(@NonNull Context context) {
     super(context);
@@ -32,25 +31,13 @@ public class HomePageView extends NestedScrollView {
 
   public HomePageView(@NonNull Context context, @Nullable AttributeSet attrs) {
     super(context, attrs);
-    init();
-  }
-
-  private void init() {
-    post(
-        new Runnable() {
-          @Override
-          public void run() {
-            IMAGE_HEIGHT = imgLayout.getMeasuredHeight();
-            log("imgLayout height= " + IMAGE_HEIGHT);
-          }
-        });
   }
 
   @Override
   protected void onFinishInflate() {
     super.onFinishInflate();
-    imgLayout = findViewById(R.id.imglayout);
-    horizontalScrollView = findViewById(R.id.horizontalScrollView);
+    topView = findViewById(R.id.imglayout);
+    bottomView = findViewById(R.id.horizontalScrollView);
   }
 
   @Override
@@ -60,7 +47,7 @@ public class HomePageView extends NestedScrollView {
         mActivePointerId = ev.getPointerId(0);
         lastY = (int) ev.getY();
         // 防抖动：如果down事件发生时child的scroller未结束，会产生抖动现象，反射方式scroller强制finish
-        horizontalScrollView.stopChildViewFling();
+        bottomView.stopChildViewFling();
         break;
       case MotionEvent.ACTION_UP:
         if (getStretchSize() > 0) {
@@ -109,9 +96,6 @@ public class HomePageView extends NestedScrollView {
   public void onNestedPreScroll(
       @NonNull View target, int dx, int dy, @NonNull int[] consumed, int type) {
     super.onNestedPreScroll(target, dx, dy, consumed, type);
-    if (target instanceof HomePageHorScrollView) {
-      log("target is HomePageHorScrollView !");
-    }
     consumed[1] = deltaYConsume(dy, type);
   }
 
@@ -126,10 +110,10 @@ public class HomePageView extends NestedScrollView {
       } else if (scrollY == 0) {
         stretch(-dy);
       }
-    } else if (dy < 0 && !horizontalScrollView.childScroll2Top()) {
+    } else if (dy < 0 && !bottomView.childScroll2Top()) {
       final int scrollY = getScrollY();
       if (scrollY == 0) {
-        horizontalScrollView.scrollCurrentChildDy(dy);
+        bottomView.scrollCurrentChildDy(dy);
       }
     } else if (dy > 0 && getStretchSize() > 0) {
       int res = Math.min(getStretchSize(), dy);
@@ -165,7 +149,7 @@ public class HomePageView extends NestedScrollView {
       stretch(-res);
       return res;
     } else if (dy > 0 && getStretchSize() == 0 && topVisible()) {
-      int res = Math.min(getScrollY() + dy, IMAGE_HEIGHT) - getScrollY();
+      int res = Math.min(getScrollY() + dy, getTopInitHeight()) - getScrollY();
       scrollBy(0, res);
       return res;
     }
@@ -178,19 +162,23 @@ public class HomePageView extends NestedScrollView {
    * @return res
    */
   private boolean canStretch() {
-    return horizontalScrollView.childScroll2Top() && !horizontalScrollView.isHorDragging();
+    return bottomView.childScroll2Top() && !bottomView.isScrolling();
+  }
+
+  private int getTopInitHeight() {
+    return topView.getInitHeight();
   }
 
   private boolean topVisible() {
-    return getScrollY() < IMAGE_HEIGHT;
+    return getScrollY() < getTopInitHeight();
   }
 
   public boolean topInvisible() {
-    return getScrollY() >= IMAGE_HEIGHT;
+    return getScrollY() >= getTopInitHeight();
   }
 
   public int getStretchSize() {
-    return imgLayout.getHeight() - IMAGE_HEIGHT;
+    return topView.getStretchSize();
   }
 
   /**
@@ -199,14 +187,14 @@ public class HomePageView extends NestedScrollView {
    * @param dy deltaY
    */
   private void stretch(int dy) {
-    imgLayout.layout(0, 0, imgLayout.getWidth(), imgLayout.getBottom() + dy);
-    horizontalScrollView.setTranslationY(horizontalScrollView.getTranslationY() + dy);
+    topView.stretch(dy);
+    bottomView.moveBy(dy);
   }
 
   /** 还原拉伸 */
   private void recoverImgSize() {
-    imgLayout.layout(0, 0, imgLayout.getWidth(), IMAGE_HEIGHT);
-    horizontalScrollView.setTranslationY(0);
+    topView.stretchRecover();
+    bottomView.moveTo(0);
   }
 
   @Override

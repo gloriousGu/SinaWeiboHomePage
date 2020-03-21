@@ -16,7 +16,7 @@ import android.widget.Scroller;
 /**
  * @author developergu
  * @version v1.0.0
- * @since 2017/7/9
+ * @since 2020/3/19
  */
 public class IndicatorView extends View {
   private int num;

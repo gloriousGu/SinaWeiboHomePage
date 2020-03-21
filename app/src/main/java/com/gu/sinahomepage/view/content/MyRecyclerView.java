@@ -1,4 +1,4 @@
-package com.gu.sinahomepage.view.horizontalscroll.content.impl;
+package com.gu.sinahomepage.view.content;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -10,8 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.gu.sinahomepage.view.horizontalscroll.content.ScrollItem;
 
 public class MyRecyclerView extends RecyclerView implements ScrollItem {
   public MyRecyclerView(@NonNull Context context) {

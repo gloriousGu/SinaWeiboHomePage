@@ -1,4 +1,4 @@
-package com.gu.sinahomepage.view.horizontalscroll.content.impl;
+package com.gu.sinahomepage.view.content;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -6,8 +6,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 
 import androidx.core.widget.NestedScrollView;
-
-import com.gu.sinahomepage.view.horizontalscroll.content.ScrollItem;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

@@ -1,10 +1,5 @@
 package com.gu.sinahomepage;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,9 +8,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.gu.sinahomepage.view.content.MyRecyclerView;
+import com.gu.sinahomepage.view.horizontalscroll.ViewPager;
 import com.gu.sinahomepage.view.tab.TabLayout;
-import com.gu.sinahomepage.view.horizontalscroll.HomePageHorScrollView;
-import com.gu.sinahomepage.view.horizontalscroll.content.impl.MyRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +36,8 @@ public class RecyclerViewActivity extends AppCompatActivity {
     }
     TabLayout tabLayout = findViewById(R.id.tab);
     tabLayout.createContentByTitles(titles).combine();
-    HomePageHorScrollView horizontalScrollView = findViewById(R.id.horizontalScrollView);
-    horizontalScrollView.bindTabLayout(tabLayout);
+    ViewPager horizontalScrollView = findViewById(R.id.horizontalScrollView);
+    horizontalScrollView.bindTab(tabLayout);
     rv1 = findViewById(R.id.rv1);
     rv2 = findViewById(R.id.rv2);
     rv3 = findViewById(R.id.rv3);

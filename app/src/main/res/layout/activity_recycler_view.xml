@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".RecyclerViewActivity">
 
     <LinearLayout
         android:id="@+id/home_page_view_content"
@@ -14,7 +14,7 @@
         android:focusableInTouchMode="true"
         android:orientation="vertical">
 
-        <FrameLayout
+        <com.gu.sinahomepage.view.top.TopLayout
             android:id="@+id/imglayout"
             android:layout_width="match_parent"
             android:layout_height="150dp"
@@ -33,7 +33,7 @@
                 app:rd="8dp"
                 app:textColor="@color/text_state_color"
                 app:textSize="14sp" />
-        </FrameLayout>
+        </com.gu.sinahomepage.view.top.TopLayout>
 
         <com.gu.sinahomepage.view.horizontalscroll.HomePageHorScrollView
             android:id="@+id/horizontalScrollView"
@@ -46,20 +46,20 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <com.gu.sinahomepage.view.horizontalscroll.content.impl.MyRecyclerView
+                <com.gu.sinahomepage.view.content.MyRecyclerView
                     android:id="@+id/rv1"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:tag="sv1" />
 
-                <com.gu.sinahomepage.view.horizontalscroll.content.impl.MyRecyclerView
+                <com.gu.sinahomepage.view.content.MyRecyclerView
                     android:id="@+id/rv2"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:tag="sv2" />
 
 
-                <com.gu.sinahomepage.view.horizontalscroll.content.impl.MyRecyclerView
+                <com.gu.sinahomepage.view.content.MyRecyclerView
                     android:id="@+id/rv3"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

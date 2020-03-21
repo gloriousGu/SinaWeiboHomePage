@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".ScrollViewActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <FrameLayout
+        <com.gu.sinahomepage.view.top.TopLayout
             android:id="@+id/imglayout"
             android:layout_width="match_parent"
             android:layout_height="300dp"
@@ -30,7 +30,7 @@
                 app:rd="8dp"
                 app:textColor="@color/text_state_color"
                 app:textSize="14sp" />
-        </FrameLayout>
+        </com.gu.sinahomepage.view.top.TopLayout>
 
         <com.gu.sinahomepage.view.horizontalscroll.HomePageHorScrollView
             android:id="@+id/horizontalScrollView"
@@ -43,7 +43,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <com.gu.sinahomepage.view.horizontalscroll.content.impl.MyScrollView
+                <com.gu.sinahomepage.view.content.MyScrollView
                     android:id="@+id/scrollView1"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -83,9 +83,9 @@
                             android:onClick="textClick"
                             android:text="text 4" />
                     </LinearLayout>
-                </com.gu.sinahomepage.view.horizontalscroll.content.impl.MyScrollView>
+                </com.gu.sinahomepage.view.content.MyScrollView>
 
-                <com.gu.sinahomepage.view.horizontalscroll.content.impl.MyScrollView
+                <com.gu.sinahomepage.view.content.MyScrollView
                     android:id="@+id/scrollView2"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -121,9 +121,9 @@
                             android:gravity="center"
                             android:text="text 4" />
                     </LinearLayout>
-                </com.gu.sinahomepage.view.horizontalscroll.content.impl.MyScrollView>
+                </com.gu.sinahomepage.view.content.MyScrollView>
 
-                <com.gu.sinahomepage.view.horizontalscroll.content.impl.MyScrollView
+                <com.gu.sinahomepage.view.content.MyScrollView
                     android:id="@+id/scrollView3"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -159,7 +159,7 @@
                             android:gravity="center"
                             android:text="text 4" />
                     </LinearLayout>
-                </com.gu.sinahomepage.view.horizontalscroll.content.impl.MyScrollView>
+                </com.gu.sinahomepage.view.content.MyScrollView>
             </LinearLayout>
         </com.gu.sinahomepage.view.horizontalscroll.HomePageHorScrollView>
     </LinearLayout>

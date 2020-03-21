@@ -11,20 +11,24 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.gu.sinahomepage.view.horizontalscroll.HomePageHorScrollView;
+import com.gu.sinahomepage.view.horizontalscroll.ViewPager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class TabLayout extends FrameLayout implements View.OnClickListener {
+/**
+ * @author developergu
+ * @version v1.0.0
+ * @since 2020/3/19
+ */
+public class TabLayout extends FrameLayout implements View.OnClickListener, Tab {
 
   private ColorStateList csl;
 
@@ -38,21 +42,37 @@ public class TabLayout extends FrameLayout implements View.OnClickListener {
   private LinearLayout mContentLayout;
   private IndicatorView mIndicatorView;
   //    private ViewPager viewPager;
-  private HomePageHorScrollView horiScrollView;
-  private int startPos;
-  private boolean clicked;
+  private ViewPager viewPager;
 
   public void onPageScrolled(int from, int to, float positionOffset) {
     // 如果是点击事件，则不使用滚动的百分比，使用默认动画处理
-    if (clicked) return;
+    //    if (clicked) return;
     // 如果是左右滑动，使用百分比处理mIndicatorView效果
-    if (from < to) {
+    if (to - from == 1) {
       // 向右
       mIndicatorView.setPercent(positionOffset);
-    } else if (from > to) {
+    } else if (from - to == 1) {
       // 向左
       mIndicatorView.setPercent(positionOffset - 1);
     }
+  }
+
+  @Override
+  public void onPageScrolledFinish() {
+    noAnim = false;
+    selectPos(viewPager.getCurrentItemPos());
+  }
+
+  boolean noAnim;
+
+  @Override
+  public boolean noAnim() {
+    return noAnim;
+  }
+
+  @Override
+  public void setViewPager(ViewPager viewPager) {
+    this.viewPager = viewPager;
   }
 
   private void log(String log) {
@@ -68,50 +88,13 @@ public class TabLayout extends FrameLayout implements View.OnClickListener {
     updateSelected(pos);
   }
 
-  //  @Override
-  //  public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-  //    // 如果是点击事件，则不使用滚动的百分比，使用默认动画处理
-  //    if (clicked) return;
-  //    // 如果是左右滑动，使用百分比处理mIndicatorView效果
-  //    if (position == startPos) {
-  //      // 向右
-  //      mIndicatorView.setPercent(positionOffset);
-  //    } else if (position < startPos) {
-  //      // 向左
-  //      mIndicatorView.setPercent(positionOffset - 1);
-  //    }
-  //  }
-  //
-  //  @Override
-  //  public void onPageSelected(int position) {
-  //    updateSelected(position);
-  //  }
-
-  //  @Override
-  //  public void onPageScrollStateChanged(int state) {
-  //    if (state == 0) {
-  //      startPos = viewPager.getCurrentItem();
-  //      if (!clicked) {
-  //        mIndicatorView.setCurrentNoAnim(startPos);
-  //      }
-  //      clicked = false;
-  //    }
-  //  }
-
   @Override
   public void onClick(View v) {
-    if (horiScrollView == null || mIndicatorView == null) return;
+    if (viewPager == null || mIndicatorView == null) return;
     int to = (Integer) v.getTag();
-    int from = horiScrollView.getCurrentItemPos();
-    horiScrollView.setCurrentItem(to);
-    clicked = true;
-    if (isOffsetTwo(from, to)) {
-      mIndicatorView.setCurrent(to);
-    } else if (toRight(from, to)) {
-      mIndicatorView.indicator2Right();
-    } else if (toLeft(from, to)) {
-      mIndicatorView.indicator2Left();
-    }
+    int from = viewPager.getCurrentItemPos();
+    noAnim = (Math.abs(from - to) > 1);
+    viewPager.setCurrentItem(to);
   }
 
   // 滚动跨度超过两个
@@ -182,10 +165,6 @@ public class TabLayout extends FrameLayout implements View.OnClickListener {
   //    viewPager = vp;
   //    return this;
   //  }
-
-  public void setHorizontalView(HomePageHorScrollView horiScrollView) {
-    this.horiScrollView = horiScrollView;
-  }
 
   /**
    * 用titles数组创建TabLayout（ 更新标题时调用）

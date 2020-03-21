@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.gu.sinahomepage.view.horizontalscroll.content.impl.MyScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.gu.sinahomepage.view.content.MyScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -34,4 +34,4 @@
             android:gravity="center"
             android:text="text 4" />
     </LinearLayout>
-</com.gu.sinahomepage.view.horizontalscroll.content.impl.MyScrollView>
+</com.gu.sinahomepage.view.content.MyScrollView>

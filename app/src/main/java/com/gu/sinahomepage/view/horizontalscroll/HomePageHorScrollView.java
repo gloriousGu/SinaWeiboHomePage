@@ -13,9 +13,9 @@ import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.gu.sinahomepage.view.tab.TabLayout;
 import com.gu.sinahomepage.view.HomePageView;
-import com.gu.sinahomepage.view.horizontalscroll.content.ScrollItem;
+import com.gu.sinahomepage.view.content.ScrollItem;
+import com.gu.sinahomepage.view.tab.Tab;
 
 import java.lang.reflect.Field;
 
@@ -24,13 +24,13 @@ import java.lang.reflect.Field;
  * @version v1.0.0
  * @since 2020/3/19
  */
-public class HomePageHorScrollView extends HorizontalScrollView {
+public class HomePageHorScrollView extends HorizontalScrollView implements ViewPager {
   private static final String TAG = HomePageHorScrollView.class.getSimpleName();
 
-  TabLayout mTabLayout;
+  Tab tab;
   private boolean cancelSuperFling;
   private static final int START_FLING_SPEED = 500;
-  int pageCurIndex;
+  int pageCurIndex, destIndex;
   int pageSize;
 
   ScrollItem currentItem;
@@ -76,34 +76,70 @@ public class HomePageHorScrollView extends HorizontalScrollView {
     }
   }
 
+  @Override
   public boolean childScroll2Top() {
     return currentItem.isTop();
   }
 
+  @Override
   public void scrollCurrentChildDy(int dy) {
     currentItem.scrollDy(dy);
   }
 
-  public boolean isHorDragging() {
-    return isHorDragging;
+  @Override
+  public boolean isScrolling() {
+    return scrolling;
+  }
+
+  @Override
+  public void bindTab(Tab tab) {
+    this.tab = tab;
+    tab.setViewPager(this);
+  }
+
+  @Override
+  public void setCurrentItem(int to) {
+    if (to == pageCurIndex) return;
+    destIndex = to;
+    smoothScrollTo(to * getWidth(), getScrollY());
+  }
+
+  @Override
+  public int getCurrentItemPos() {
+    return pageCurIndex;
+  }
+
+  @Override
+  public void stopChildViewFling() {
+    ViewGroup viewGroup = (ViewGroup) getChildAt(0);
+    for (int i = 0; i < viewGroup.getChildCount(); i++) {
+      ((ScrollItem) viewGroup.getChildAt(i)).stopFling();
+    }
+  }
+
+  @Override
+  public void moveBy(int dy) {
+    setTranslationY(getMoveY() + dy);
+  }
+
+  @Override
+  public void moveTo(int y) {
+    setTranslationY(y);
+  }
+
+  @Override
+  public int getMoveY() {
+    return (int) getTranslationY();
   }
 
   private void updateCurrentChild(int pos) {
     currentItem = (ScrollItem) ((ViewGroup) getChildAt(0)).getChildAt(pos);
   }
 
-  public void bindTabLayout(TabLayout tabLayout) {
-    this.mTabLayout = tabLayout;
-    mTabLayout.setHorizontalView(this);
-  }
-
-  public void setCurrentItem(int to) {
-    if (to == pageCurIndex) return;
-    smoothScrollTo(pageCurIndex * getWidth(), getScrollY());
-  }
-
-  public int getCurrentItemPos() {
-    return pageCurIndex;
+  private void onScrollFinish() {
+    tab.onPageScrolledFinish();
+    updateCurrentChild(pageCurIndex);
+    scrolling = false;
   }
 
   private int getFlingSpeed() {
@@ -117,13 +153,6 @@ public class HomePageHorScrollView extends HorizontalScrollView {
       e.printStackTrace();
     }
     return 0;
-  }
-
-  public void stopChildViewFling() {
-    ViewGroup viewGroup = (ViewGroup) getChildAt(0);
-    for (int i = 0; i < viewGroup.getChildCount(); i++) {
-      ((ScrollItem) viewGroup.getChildAt(i)).stopFling();
-    }
   }
 
   @Override
@@ -163,7 +192,7 @@ public class HomePageHorScrollView extends HorizontalScrollView {
         cancelSuperFling = false;
         if (Math.abs(speedY) > START_FLING_SPEED) {
           // do self fling!
-          smoothScrollTo(calcPageIndexBySpeed(speedY), getScrollY());
+          scroll2Page(calcPageIndexBySpeed(speedY));
         } else {
           // 拖动抬手时 spring back
           scrollByActionUP();
@@ -174,7 +203,7 @@ public class HomePageHorScrollView extends HorizontalScrollView {
   }
 
   private int calcPageIndexBySpeed(int speedY) {
-    return speedY < 0 ? (pageCurIndex + 1) * getWidth() : (pageCurIndex - 1) * getWidth();
+    return speedY < 0 ? (pageCurIndex + 1) : (pageCurIndex - 1);
   }
 
   private void scrollByActionUP() {
@@ -182,14 +211,23 @@ public class HomePageHorScrollView extends HorizontalScrollView {
     final int width = getWidth();
     int deltaX = scrollX - pageCurIndex * width;
     if (deltaX > 0 && deltaX > width / 3) {
-      smoothScrollTo((pageCurIndex + 1) * width, getScrollY());
+      //      smoothScrollTo((pageCurIndex + 1) * width, getScrollY());
+      scroll2Page(pageCurIndex + 1);
     } else if (deltaX > 0 && deltaX <= width / 3) {
-      smoothScrollTo(pageCurIndex * width, getScrollY());
+      //      smoothScrollTo(pageCurIndex * width, getScrollY());
+      scroll2Page(pageCurIndex);
     } else if (deltaX < 0 && deltaX < -width / 3) {
-      smoothScrollTo((pageCurIndex - 1) * width, getScrollY());
+      //      smoothScrollTo((pageCurIndex - 1) * width, getScrollY());
+      scroll2Page(pageCurIndex - 1);
     } else if (deltaX < 0 && deltaX >= -width / 3) {
-      smoothScrollTo(pageCurIndex * width, getScrollY());
+      //      smoothScrollTo(pageCurIndex * width, getScrollY());
+      scroll2Page(pageCurIndex);
     }
+  }
+
+  private void scroll2Page(int dest) {
+    destIndex = dest;
+    smoothScrollTo(dest * getWidth(), getScrollY());
   }
 
   @Override
@@ -209,7 +247,7 @@ public class HomePageHorScrollView extends HorizontalScrollView {
     Log.e(TAG, "----" + log + "----");
   }
 
-  boolean isHorDragging;
+  boolean scrolling;
 
   @Override
   protected void onScrollChanged(int l, int t, int oldl, int oldt) {
@@ -217,17 +255,29 @@ public class HomePageHorScrollView extends HorizontalScrollView {
     int width = getWidth();
     if (l % width == 0) {
       pageCurIndex = l / width;
-      mTabLayout.selectPos(pageCurIndex);
-      updateCurrentChild(pageCurIndex);
-      isHorDragging = false;
-    } else {
-      isHorDragging = true;
-      int deltaX = l - pageCurIndex * width;
-      if (deltaX > 0) {
-        mTabLayout.onPageScrolled(pageCurIndex, pageCurIndex + 1, 1.0f * (l % width) / width);
-      } else {
-        mTabLayout.onPageScrolled(pageCurIndex, pageCurIndex - 1, 1.0f * (l % width) / width);
+      if (pageCurIndex == destIndex) {
+        onScrollFinish();
       }
+    } else {
+      scrolling = true;
+      // 如果超过1页的滚动 不执行中间动画效果
+      notifyTabScroll(l, width);
+    }
+  }
+
+  /**
+   * 通知tablayout执行动画
+   *
+   * @param scrollX scroll x
+   * @param pageWidth page width
+   */
+  private void notifyTabScroll(int scrollX, int pageWidth) {
+    if (tab.noAnim()) return;
+    int deltaX = scrollX - pageCurIndex * pageWidth;
+    if (deltaX > 0) {
+      tab.onPageScrolled(pageCurIndex, pageCurIndex + 1, 1.0f * (scrollX % pageWidth) / pageWidth);
+    } else {
+      tab.onPageScrolled(pageCurIndex, pageCurIndex - 1, 1.0f * (scrollX % pageWidth) / pageWidth);
     }
   }
 }
