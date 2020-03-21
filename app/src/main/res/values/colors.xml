@@ -10,4 +10,5 @@
     <color name="red_A400">#FF1744</color>
     <color name="tab_text_nor">#b8b8b8</color>
     <color name="tab_text_sel">#353535</color>
+    <color name="orange_red">#FF4500</color>
 </resources>

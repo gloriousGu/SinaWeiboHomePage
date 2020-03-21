@@ -5,6 +5,8 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,6 +26,8 @@ public class HomePageView extends NestedScrollView {
 
   TopView topView;
   BottomView bottomView;
+  HomePageFrameLayout contentLayout;
+  LinearLayout appBar;
 
   public HomePageView(@NonNull Context context) {
     super(context);
@@ -38,6 +42,18 @@ public class HomePageView extends NestedScrollView {
     super.onFinishInflate();
     topView = findViewById(R.id.imglayout);
     bottomView = findViewById(R.id.horizontalScrollView);
+    contentLayout = findViewById(R.id.home_page_view_content);
+    appBar = findViewById(R.id.appBar);
+  }
+
+  @Override
+  protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    int height = MeasureSpec.getSize(heightMeasureSpec);
+    log("HomePageView:height= " + height);
+    View v = getChildAt(0);
+    v.getLayoutParams().height = height;
+    v.measure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
   }
 
   @Override
@@ -149,7 +165,7 @@ public class HomePageView extends NestedScrollView {
       stretch(-res);
       return res;
     } else if (dy > 0 && getStretchSize() == 0 && topVisible()) {
-      int res = Math.min(getScrollY() + dy, getTopInitHeight()) - getScrollY();
+      int res = Math.min(getScrollY() + dy, getFoldHeight()) - getScrollY();
       scrollBy(0, res);
       return res;
     }
@@ -165,16 +181,16 @@ public class HomePageView extends NestedScrollView {
     return bottomView.childScroll2Top() && !bottomView.isScrolling();
   }
 
-  private int getTopInitHeight() {
-    return topView.getInitHeight();
+  private int getFoldHeight() {
+    return contentLayout.getFoldHeight();
   }
 
   private boolean topVisible() {
-    return getScrollY() < getTopInitHeight();
+    return getScrollY() < getFoldHeight();
   }
 
   public boolean topInvisible() {
-    return getScrollY() >= getTopInitHeight();
+    return getScrollY() >= getFoldHeight();
   }
 
   public int getStretchSize() {
@@ -200,6 +216,7 @@ public class HomePageView extends NestedScrollView {
   @Override
   protected void onScrollChanged(int l, int t, int oldl, int oldt) {
     super.onScrollChanged(l, t, oldl, oldt);
+    appBar.setTranslationY(t);
   }
 
   public void log(String log) {

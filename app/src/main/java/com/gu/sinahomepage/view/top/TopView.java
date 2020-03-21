@@ -6,7 +6,5 @@ public interface TopView {
 
   void stretchRecover();
 
-  int getInitHeight();
-
   int getStretchSize();
 }

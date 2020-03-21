@@ -7,12 +7,14 @@ import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.gu.sinahomepage.R;
 import com.gu.sinahomepage.view.HomePageView;
 import com.gu.sinahomepage.view.content.ScrollItem;
 import com.gu.sinahomepage.view.tab.Tab;
@@ -51,10 +53,9 @@ public class HomePageHorScrollView extends HorizontalScrollView implements ViewP
           public void run() {
             HomePageView homePageView = (HomePageView) getParent().getParent();
             log("height= " + homePageView.getMeasuredHeight());
-            int height = homePageView.getMeasuredHeight();
+            int height = getMeasuredHeight();
             int width = homePageView.getMeasuredWidth();
-
-            initSize(HomePageHorScrollView.this, width, height);
+            log("height= " + height);
             initScrollItemSize(width, height);
             updateCurrentChild(0);
           }
@@ -62,7 +63,7 @@ public class HomePageHorScrollView extends HorizontalScrollView implements ViewP
   }
 
   private void initSize(View view, int width, int height) {
-    LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) view.getLayoutParams();
+    ViewGroup.LayoutParams params = view.getLayoutParams();
     params.height = height;
     params.width = width;
     view.setLayoutParams(params);

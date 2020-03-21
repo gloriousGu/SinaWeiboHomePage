@@ -26,9 +26,10 @@
                 android:background="#fff"
                 android:paddingLeft="50dp"
                 android:paddingRight="50dp"
+                app:indicatorColor="@color/orange_red"
                 app:margin="24dp"
                 app:rd="8dp"
-                app:textColor="@color/text_state_color"
+                app:textColor="@color/tab_text_state_color"
                 app:textSize="14sp" />
         </com.gu.sinahomepage.view.top.TopLayout>
 

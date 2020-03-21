@@ -6,34 +6,40 @@
     android:layout_height="match_parent"
     tools:context=".RecyclerViewActivity">
 
-    <LinearLayout
+    <com.gu.sinahomepage.view.HomePageFrameLayout
         android:id="@+id/home_page_view_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:orientation="vertical">
+        android:focusableInTouchMode="true">
 
         <com.gu.sinahomepage.view.top.TopLayout
             android:id="@+id/imglayout"
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="240dp"
             android:background="@mipmap/topimage">
-
 
             <com.gu.sinahomepage.view.tab.TabLayout
                 android:id="@+id/tab"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="@dimen/tab_height"
                 android:layout_gravity="bottom"
                 android:background="#fff"
                 android:paddingLeft="50dp"
                 android:paddingRight="50dp"
-                app:margin="24dp"
+                app:indicatorColor="@color/orange_red"
+                app:margin="32dp"
                 app:rd="8dp"
-                app:textColor="@color/text_state_color"
+                app:textColor="@color/tab_text_state_color"
                 app:textSize="14sp" />
         </com.gu.sinahomepage.view.top.TopLayout>
+
+        <LinearLayout
+            android:id="@+id/appBar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/tab_height"
+            android:background="#ffffff"
+            android:orientation="horizontal"></LinearLayout>
 
         <com.gu.sinahomepage.view.horizontalscroll.HomePageHorScrollView
             android:id="@+id/horizontalScrollView"
@@ -67,5 +73,5 @@
 
             </LinearLayout>
         </com.gu.sinahomepage.view.horizontalscroll.HomePageHorScrollView>
-    </LinearLayout>
+    </com.gu.sinahomepage.view.HomePageFrameLayout>
 </com.gu.sinahomepage.view.HomePageView>
