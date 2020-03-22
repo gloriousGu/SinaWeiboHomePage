@@ -2,13 +2,10 @@ package com.gu.sinahomepage.view.top;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import com.gu.sinahomepage.R;
 
 public class TopLayout extends FrameLayout implements TopView {
   int layoutHeight;
@@ -30,6 +27,11 @@ public class TopLayout extends FrameLayout implements TopView {
             layoutHeight = getHeight();
           }
         });
+  }
+
+  @Override
+  protected void onFinishInflate() {
+    super.onFinishInflate();
   }
 
   @Override

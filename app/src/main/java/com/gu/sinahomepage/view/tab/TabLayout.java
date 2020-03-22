@@ -17,7 +17,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.gu.sinahomepage.view.horizontalscroll.ViewPager;
+import com.gu.sinahomepage.view.bottom.horizontalscroll.ViewPager;
 
 import java.util.ArrayList;
 import java.util.Arrays;

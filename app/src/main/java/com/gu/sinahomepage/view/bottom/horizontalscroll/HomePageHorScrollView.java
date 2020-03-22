@@ -1,4 +1,4 @@
-package com.gu.sinahomepage.view.horizontalscroll;
+package com.gu.sinahomepage.view.bottom.horizontalscroll;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -7,14 +7,11 @@ import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
-import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.gu.sinahomepage.R;
 import com.gu.sinahomepage.view.HomePageView;
 import com.gu.sinahomepage.view.content.ScrollItem;
 import com.gu.sinahomepage.view.tab.Tab;
@@ -33,7 +30,6 @@ public class HomePageHorScrollView extends HorizontalScrollView implements ViewP
   private boolean cancelSuperFling;
   private static final int START_FLING_SPEED = 500;
   int pageCurIndex, destIndex;
-  int pageSize;
 
   ScrollItem currentItem;
 
@@ -51,30 +47,30 @@ public class HomePageHorScrollView extends HorizontalScrollView implements ViewP
         new Runnable() {
           @Override
           public void run() {
-            HomePageView homePageView = (HomePageView) getParent().getParent();
-            log("height= " + homePageView.getMeasuredHeight());
-            int height = getMeasuredHeight();
-            int width = homePageView.getMeasuredWidth();
-            log("height= " + height);
-            initScrollItemSize(width, height);
             updateCurrentChild(0);
           }
         });
   }
 
-  private void initSize(View view, int width, int height) {
-    ViewGroup.LayoutParams params = view.getLayoutParams();
-    params.height = height;
-    params.width = width;
-    view.setLayoutParams(params);
+  @Override
+  protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    int width = MeasureSpec.getSize(widthMeasureSpec);
+    int height = MeasureSpec.getSize(heightMeasureSpec);
+    View view = getChildAt(0);
+    if (view != null) {
+      // 先传给content measureSpec参数为父parent具体尺寸，然后在content的measure再根据该尺寸重新修改宽度
+      view.getLayoutParams().width = width;
+      view.getLayoutParams().height = height;
+      view.measure(
+          MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+          MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
+    }
   }
 
-  private void initScrollItemSize(int width, int height) {
-    ViewGroup viewGroup = (ViewGroup) getChildAt(0);
-    final int count = viewGroup.getChildCount();
-    for (int i = 0; i < count; i++) {
-      initSize(viewGroup.getChildAt(i), width, height);
-    }
+  @Override
+  protected void onLayout(boolean changed, int l, int t, int r, int b) {
+    super.onLayout(changed, l, t, r, b);
   }
 
   @Override
@@ -131,6 +127,19 @@ public class HomePageHorScrollView extends HorizontalScrollView implements ViewP
   @Override
   public int getMoveY() {
     return (int) getTranslationY();
+  }
+
+  @Override
+  public void initViewSize(int width, int height) {
+    getLayoutParams().height = height;
+    measure(
+        MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+        MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
+  }
+
+  @Override
+  public void initLocation(int l, int t, int r, int b) {
+    layout(l, t, r, b);
   }
 
   private void updateCurrentChild(int pos) {
@@ -236,12 +245,6 @@ public class HomePageHorScrollView extends HorizontalScrollView implements ViewP
     if (cancelSuperFling) return;
     super.fling(velocityX);
     log("start fling!");
-  }
-
-  @Override
-  protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-    pageSize = getChildAt(0).getMeasuredWidth() / getMeasuredWidth();
   }
 
   private void log(String log) {

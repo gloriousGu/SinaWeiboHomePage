@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".ScrollViewActivity">
 
-    <LinearLayout
+    <com.gu.sinahomepage.view.HomePageFrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -14,35 +14,89 @@
         <com.gu.sinahomepage.view.top.TopLayout
             android:id="@+id/imglayout"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:background="@mipmap/topimage">
+            android:layout_height="@dimen/top_layout_height"
+            android:background="@mipmap/example">
 
+            <LinearLayout
+                android:id="@+id/head_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|bottom"
+                android:layout_marginBottom="@dimen/tab_head_margin_bottom"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <com.gu.sinahomepage.view.top.CircleImageView
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:src="@drawable/topimage" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/nickname"
+                    android:textColor="#fff"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/profile"
+                    android:textColor="#fff" />
+            </LinearLayout>
 
             <com.gu.sinahomepage.view.tab.TabLayout
                 android:id="@+id/tab"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_gravity="bottom"
-                android:background="#fff"
-                android:paddingLeft="50dp"
-                android:paddingRight="50dp"
+                android:background="@drawable/tablayout_bg"
+                android:paddingLeft="@dimen/tab_margin"
+                android:paddingRight="@dimen/tab_margin"
                 app:indicatorColor="@color/orange_red"
-                app:margin="24dp"
+                app:margin="@dimen/tab_indicator_margin"
                 app:rd="8dp"
                 app:textColor="@color/tab_text_state_color"
                 app:textSize="14sp" />
         </com.gu.sinahomepage.view.top.TopLayout>
 
-        <com.gu.sinahomepage.view.horizontalscroll.HomePageHorScrollView
+        <com.gu.sinahomepage.view.appbar.TopAppBar
+            android:id="@+id/appBar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/tab_height"
+            android:background="@drawable/toolbar_bg"
+            android:paddingLeft="8dp">
+
+            <com.gu.sinahomepage.view.appbar.SquareImageBtn
+                android:id="@+id/arrow"
+                android:layout_width="1dp"
+                android:layout_height="@dimen/square_btn_size"
+                android:layout_gravity="center_vertical"
+                android:scaleType="fitCenter"
+                android:src="@drawable/arrow_left" />
+
+            <TextView
+                android:id="@+id/nickname"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/nickname"
+                android:textColor="@color/tab_text_sel"
+                android:textSize="16sp"
+                android:visibility="gone" />
+        </com.gu.sinahomepage.view.appbar.TopAppBar>
+
+        <com.gu.sinahomepage.view.bottom.horizontalscroll.HomePageHorScrollView
             android:id="@+id/horizontalScrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <LinearLayout
+            <com.gu.sinahomepage.view.bottom.horizontalscroll.ContentFrameLayout
                 android:id="@+id/contentlayout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content">
 
                 <com.gu.sinahomepage.view.content.MyScrollView
                     android:id="@+id/scrollView1"
@@ -161,7 +215,7 @@
                             android:text="text 4" />
                     </LinearLayout>
                 </com.gu.sinahomepage.view.content.MyScrollView>
-            </LinearLayout>
-        </com.gu.sinahomepage.view.horizontalscroll.HomePageHorScrollView>
-    </LinearLayout>
+            </com.gu.sinahomepage.view.bottom.horizontalscroll.ContentFrameLayout>
+        </com.gu.sinahomepage.view.bottom.horizontalscroll.HomePageHorScrollView>
+    </com.gu.sinahomepage.view.HomePageFrameLayout>
 </com.gu.sinahomepage.view.HomePageView>

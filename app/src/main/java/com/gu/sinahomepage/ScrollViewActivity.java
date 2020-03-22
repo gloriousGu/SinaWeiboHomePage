@@ -7,7 +7,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.gu.sinahomepage.view.horizontalscroll.ViewPager;
+import com.gu.sinahomepage.view.bottom.horizontalscroll.ViewPager;
 import com.gu.sinahomepage.view.tab.TabLayout;
 
 public class ScrollViewActivity extends AppCompatActivity {

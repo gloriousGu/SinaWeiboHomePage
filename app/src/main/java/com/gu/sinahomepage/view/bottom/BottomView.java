@@ -42,4 +42,8 @@ public interface BottomView {
 
   /** 获得当前移动位置y */
   int getMoveY();
+
+  void initViewSize(int width, int height);
+
+  void initLocation(int l, int t, int r, int b);
 }

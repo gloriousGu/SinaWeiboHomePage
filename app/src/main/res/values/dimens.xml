@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="min_tab_layout_height">30dp</dimen>
-    <dimen name="tab_height">40dp</dimen>
+    <dimen name="tab_height">48dp</dimen>
+    <dimen name="tab_head_margin_bottom">80dp</dimen>
+    <dimen name="tab_margin">80dp</dimen>
+    <dimen name="square_btn_size">26dp</dimen>
+    <dimen name="top_layout_height">260dp</dimen>
+    <dimen name="tab_indicator_margin">16dp</dimen>
 </resources>

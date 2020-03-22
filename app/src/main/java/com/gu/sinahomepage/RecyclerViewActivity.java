@@ -10,13 +10,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.gu.sinahomepage.view.content.MyRecyclerView;
-import com.gu.sinahomepage.view.horizontalscroll.ViewPager;
+import com.gu.sinahomepage.view.bottom.horizontalscroll.ViewPager;
 import com.gu.sinahomepage.view.tab.TabLayout;
 
 import java.util.ArrayList;
@@ -34,7 +32,7 @@ public class RecyclerViewActivity extends AppCompatActivity {
     
     setContentView(R.layout.activity_recycler_view);
     list = new ArrayList<>();
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 8; i++) {
       list.add("text " + i);
     }
     TabLayout tabLayout = findViewById(R.id.tab);
