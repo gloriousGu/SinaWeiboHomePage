@@ -2,7 +2,9 @@ package com.gu.sinahomepage.view.top;
 
 public interface TopView {
 
-  void stretch(int dy);
+  void stretchBy(int dy);
+
+  void stretchRecoverBy(int y);
 
   void stretchRecover();
 

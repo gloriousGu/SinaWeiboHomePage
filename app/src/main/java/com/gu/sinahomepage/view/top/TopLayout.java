@@ -35,8 +35,13 @@ public class TopLayout extends FrameLayout implements TopView {
   }
 
   @Override
-  public void stretch(int dy) {
+  public void stretchBy(int dy) {
     layout(0, 0, getWidth(), getBottom() + dy);
+  }
+
+  @Override
+  public void stretchRecoverBy(int dy) {
+    layout(0, 0, getWidth(), layoutHeight + dy);
   }
 
   @Override

@@ -1,10 +1,12 @@
 package com.gu.sinahomepage.view;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,6 +29,7 @@ public class HomePageView extends NestedScrollView {
   private BottomView bottomView;
   private AppBar appBar;
   private int FOLD_SIZE;
+  private ValueAnimator animator;
 
   public HomePageView(@NonNull Context context) {
     super(context);
@@ -65,6 +68,9 @@ public class HomePageView extends NestedScrollView {
   public boolean dispatchTouchEvent(MotionEvent ev) {
     switch (ev.getAction()) {
       case MotionEvent.ACTION_DOWN:
+        if (animator != null && animator.isStarted()) {
+          return false;
+        }
         mActivePointerId = ev.getPointerId(0);
         lastY = (int) ev.getY();
         // 防抖动：如果down事件发生时child的scroller未结束，会产生抖动现象，反射方式scroller强制finish
@@ -126,10 +132,10 @@ public class HomePageView extends NestedScrollView {
       if (scrollY > 0) {
         int res = scrollY + dy;
         if (res < 0) {
-          stretch(-res);
+          stretchBy(-res);
         }
       } else if (scrollY == 0) {
-        stretch(-dy);
+        stretchBy(-dy);
       }
     } else if (dy < 0 && !bottomView.childScroll2Top()) {
       final int scrollY = getScrollY();
@@ -138,7 +144,7 @@ public class HomePageView extends NestedScrollView {
       }
     } else if (dy > 0 && getStretchSize() > 0) {
       int res = Math.min(getStretchSize(), dy);
-      stretch(-res);
+      stretchBy(-res);
     }
   }
 
@@ -152,7 +158,7 @@ public class HomePageView extends NestedScrollView {
           scrollBy(0, dy);
         } else if (res < 0) {
           if (type == ViewCompat.TYPE_TOUCH) {
-            stretch(-res);
+            stretchBy(-res);
           }
           scrollTo(0, 0);
         } else {
@@ -161,13 +167,13 @@ public class HomePageView extends NestedScrollView {
       } else if (scrollY == 0) {
         if (type == ViewCompat.TYPE_TOUCH) {
           // 拉伸stretch
-          stretch(-dy);
+          stretchBy(-dy);
         }
       }
       return dy;
     } else if (dy > 0 && getStretchSize() > 0) {
       int res = Math.min(getStretchSize(), dy);
-      stretch(-res);
+      stretchBy(-res);
       return res;
     } else if (dy > 0 && getStretchSize() == 0 && topVisible()) {
       int res = Math.min(getScrollY() + dy, FOLD_SIZE) - getScrollY();
@@ -199,15 +205,47 @@ public class HomePageView extends NestedScrollView {
    *
    * @param dy deltaY
    */
-  private void stretch(int dy) {
-    topView.stretch(dy);
+  private void stretchBy(int dy) {
+    topView.stretchBy(dy);
     bottomView.moveBy(dy);
+  }
+
+  private void stretchRecoverBy(int y) {
+    topView.stretchRecoverBy(y);
+    bottomView.moveTo(y);
   }
 
   /** 还原拉伸 */
   private void recoverImgSize() {
-    topView.stretchRecover();
-    bottomView.moveTo(0);
+    if (animator == null) {
+      animator = ValueAnimator.ofInt(getStretchSize(), 0).setDuration(200);
+      animator.setInterpolator(new DecelerateInterpolator());
+      animator.addUpdateListener(listener);
+    } else {
+      animator.setIntValues(getStretchSize(), 0);
+    }
+    animator.start();
+  }
+
+  ValueAnimator.AnimatorUpdateListener listener =
+      new ValueAnimator.AnimatorUpdateListener() {
+        @Override
+        public void onAnimationUpdate(ValueAnimator animation) {
+          Integer value = (Integer) animation.getAnimatedValue();
+          stretchRecoverBy(value);
+        }
+      };
+
+  @Override
+  protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    release();
+  }
+
+  private void release() {
+    if (animator != null) {
+      animator.cancel();
+    }
   }
 
   @Override
