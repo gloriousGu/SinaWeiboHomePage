@@ -157,6 +157,7 @@ public class HomePageHorScrollView extends HorizontalScrollView implements ViewP
       Field velocityTrackerField = getClass().getSuperclass().getDeclaredField("mVelocityTracker");
       velocityTrackerField.setAccessible(true);
       VelocityTracker mVelocityTracker = (VelocityTracker) velocityTrackerField.get(this);
+      if (mVelocityTracker == null) return 0;
       mVelocityTracker.computeCurrentVelocity(1000, 8000);
       return (int) mVelocityTracker.getXVelocity();
     } catch (NoSuchFieldException | IllegalAccessException e) {
@@ -165,28 +166,54 @@ public class HomePageHorScrollView extends HorizontalScrollView implements ViewP
     return 0;
   }
 
+  //  @Override
+  //  public boolean dispatchTouchEvent(MotionEvent ev) {
+  //    return super.dispatchTouchEvent(ev);
+  //  }
+
+  int lastX, lastY;
+
   @Override
   public boolean dispatchTouchEvent(MotionEvent ev) {
+    switch (ev.getAction()) {
+      case MotionEvent.ACTION_DOWN:
+        lastX = (int) ev.getRawX();
+        lastY = (int) ev.getRawY();
+        getParent().getParent().requestDisallowInterceptTouchEvent(true);
+        break;
+    }
     return super.dispatchTouchEvent(ev);
   }
 
-  boolean res;
+  boolean intercept;
 
   @Override
   public boolean onInterceptTouchEvent(MotionEvent ev) {
-    super.onInterceptTouchEvent(ev);
+    intercept = super.onInterceptTouchEvent(ev);
     switch (ev.getAction()) {
       case MotionEvent.ACTION_DOWN:
-        res = true; // 重置res
+        intercept = true; // 重置intercept
         return false;
       case MotionEvent.ACTION_MOVE:
+        int x = (int) ev.getRawX();
+        int y = (int) ev.getRawY();
         int stretchSize = ((HomePageView) getParent().getParent()).getStretchSize();
+        if (Math.abs(lastX - x) > Math.abs(lastY - y) + 4 && stretchSize == 0) {
+          // 必须有 否则横向滚动时会出现停止bug
+          requestDisallowInterceptTouchEvent(true);
+          return true;
+        }
+        lastX = x;
+        lastY = y;
         // 拉伸状态禁止 水平滚动
         if (stretchSize > 0) {
-          res = false;
+          intercept = false;
         }
+      case MotionEvent.ACTION_UP:
+        intercept = false;
+        break;
     }
-    return res; // cation!
+    return intercept; // cation!
   }
 
   @Override
@@ -195,6 +222,7 @@ public class HomePageHorScrollView extends HorizontalScrollView implements ViewP
       case MotionEvent.ACTION_DOWN:
         break;
       case MotionEvent.ACTION_UP:
+        log("ACTION_UP-----发生");
         // 取消掉horizontal本身的fling,让fling结束时的停留位置在整数页（简单viewpager实现）
         cancelSuperFling = true;
         int speedY = getFlingSpeed();
@@ -208,6 +236,9 @@ public class HomePageHorScrollView extends HorizontalScrollView implements ViewP
           scrollByActionUP();
         }
         return true;
+      case MotionEvent.ACTION_CANCEL:
+        log("ACTION_CANCEL发生");
+        break;
     }
     return super.onTouchEvent(ev);
   }

@@ -45,11 +45,6 @@ public class TopLayout extends FrameLayout implements TopView {
   }
 
   @Override
-  public void stretchRecover() {
-    layout(0, 0, getWidth(), layoutHeight);
-  }
-
-  @Override
   public int getStretchSize() {
     return getHeight() - layoutHeight;
   }

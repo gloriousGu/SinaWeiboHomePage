@@ -86,7 +86,7 @@
                 android:text="@string/nickname"
                 android:textColor="@color/tab_text_sel"
                 android:textSize="16sp"
-                android:visibility="gone" />
+                android:visibility="invisible" />
         </com.gu.sinahomepage.view.appbar.TopAppBar>
 
         <com.gu.sinahomepage.view.bottom.horizontalscroll.HomePageHorScrollView
@@ -103,12 +103,14 @@
                     android:id="@+id/rv1"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:background="@color/indigo_A200"
                     android:tag="sv1" />
 
                 <com.gu.sinahomepage.view.content.MyRecyclerView
                     android:id="@+id/rv2"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:background="@color/colorPrimary"
                     android:tag="sv2" />
 
 
@@ -116,6 +118,7 @@
                     android:id="@+id/rv3"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:background="@color/grey_500"
                     android:tag="sv3" />
 
             </com.gu.sinahomepage.view.bottom.horizontalscroll.ContentFrameLayout>

@@ -34,7 +34,7 @@ public class TopAppBar extends FrameLayout implements AppBar {
     setTranslationY(y);
     setTransparent(y != foldSize);
     arrow.setImageLevel(y == foldSize ? 1 : 0);
-    nickname.setVisibility(y == foldSize ? VISIBLE : GONE);
+    nickname.setVisibility(y == foldSize ? VISIBLE : INVISIBLE);
   }
 
   @Override
