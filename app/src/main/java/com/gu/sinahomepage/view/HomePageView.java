@@ -16,6 +16,7 @@ import androidx.core.widget.NestedScrollView;
 import com.gu.sinahomepage.R;
 import com.gu.sinahomepage.view.appbar.AppBar;
 import com.gu.sinahomepage.view.bottom.BottomView;
+import com.gu.sinahomepage.view.bottom.horizontalscroll.ViewPager;
 import com.gu.sinahomepage.view.top.TopView;
 
 /**
@@ -30,6 +31,7 @@ public class HomePageView extends NestedScrollView {
   private AppBar appBar;
   private int FOLD_SIZE;
   private ValueAnimator animator;
+  private static final float STRETCH_RATE = 0.5f; // 下拉阻尼系数
 
   public HomePageView(@NonNull Context context) {
     super(context);
@@ -72,6 +74,7 @@ public class HomePageView extends NestedScrollView {
           return false;
         }
         mActivePointerId = ev.getPointerId(0);
+        lastX = (int) ev.getX();
         lastY = (int) ev.getY();
         // 防抖动：如果down事件发生时child的scroller未结束，会产生抖动现象，反射方式scroller强制finish
         bottomView.stopChildViewFling();
@@ -85,7 +88,24 @@ public class HomePageView extends NestedScrollView {
     return super.dispatchTouchEvent(ev);
   }
 
-  int lastY;
+  @Override
+  public boolean onInterceptTouchEvent(MotionEvent ev) {
+    boolean res = super.onInterceptTouchEvent(ev);
+    if (ev.getAction() == MotionEvent.ACTION_MOVE) {
+      int x = (int) ev.getX();
+      int y = (int) ev.getY();
+      int stretchSize = getStretchSize();
+      if (Math.abs(lastX - x) > Math.abs(lastY - y) && stretchSize == 0) {
+        // 优先水平滚动
+        res = false;
+      }
+      lastX = x;
+      lastY = y;
+    }
+    return res;
+  }
+
+  int lastX, lastY;
   int mActivePointerId;
 
   @Override
@@ -167,6 +187,7 @@ public class HomePageView extends NestedScrollView {
       } else if (scrollY == 0) {
         if (type == ViewCompat.TYPE_TOUCH) {
           // 拉伸stretch
+          ((ViewPager) bottomView).getCurrentItem().setField(true);
           stretchBy(-dy);
         }
       }
@@ -206,6 +227,10 @@ public class HomePageView extends NestedScrollView {
    * @param dy deltaY
    */
   private void stretchBy(int dy) {
+    if (dy > 0) {
+      dy = (int) (dy * STRETCH_RATE);
+      if (dy == 0) return;
+    }
     topView.stretchBy(dy);
     bottomView.moveBy(dy);
   }

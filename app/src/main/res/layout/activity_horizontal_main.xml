@@ -8,8 +8,7 @@
 
     <com.gu.sinahomepage.view.HomePageFrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
         <com.gu.sinahomepage.view.top.TopLayout
             android:id="@+id/imglayout"

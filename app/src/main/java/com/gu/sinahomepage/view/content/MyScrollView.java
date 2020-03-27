@@ -7,6 +7,7 @@ import android.view.MotionEvent;
 
 import androidx.core.widget.NestedScrollView;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -67,13 +68,13 @@ public class MyScrollView extends NestedScrollView implements ScrollItem {
       case MotionEvent.ACTION_DOWN:
         lastX = (int) ev.getRawX();
         lastY = (int) ev.getRawY();
-        getParent().getParent().requestDisallowInterceptTouchEvent(true);
+        requestDisallowInterceptTouchEvent(true);
         break;
       case MotionEvent.ACTION_MOVE:
         int x = (int) ev.getRawX();
         int y = (int) ev.getRawY();
         if (Math.abs(lastX - x) > Math.abs(lastY - y) + 4) {
-          getParent().getParent().requestDisallowInterceptTouchEvent(false);
+          getParent().requestDisallowInterceptTouchEvent(false);
         }
         lastX = x;
         lastY = y;
@@ -91,4 +92,17 @@ public class MyScrollView extends NestedScrollView implements ScrollItem {
   public boolean onInterceptTouchEvent(MotionEvent ev) {
     return super.onInterceptTouchEvent(ev);
   }
+
+  @Override
+  public void setField(boolean field) {
+    try {
+      mIsBeingDragged = getClass().getSuperclass().getDeclaredField("mIsBeingDragged");
+      mIsBeingDragged.setAccessible(true);
+      mIsBeingDragged.set(this, field);
+    } catch (NoSuchFieldException | IllegalAccessException e) {
+      e.printStackTrace();
+    }
+  }
+
+  Field mIsBeingDragged;
 }

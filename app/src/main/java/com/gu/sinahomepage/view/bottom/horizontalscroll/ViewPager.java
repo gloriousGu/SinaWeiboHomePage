@@ -1,6 +1,7 @@
 package com.gu.sinahomepage.view.bottom.horizontalscroll;
 
 import com.gu.sinahomepage.view.bottom.BottomView;
+import com.gu.sinahomepage.view.content.ScrollItem;
 import com.gu.sinahomepage.view.tab.Tab;
 
 public interface ViewPager extends BottomView {
@@ -14,4 +15,5 @@ public interface ViewPager extends BottomView {
   /** 绑定tab */
   void bindTab(Tab tab);
 
+  ScrollItem getCurrentItem();
 }

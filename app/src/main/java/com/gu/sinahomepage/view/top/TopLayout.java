@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class TopLayout extends FrameLayout implements TopView {
-  int layoutHeight;
+  int height;
 
   public TopLayout(@NonNull Context context) {
     super(context);
@@ -24,7 +24,7 @@ public class TopLayout extends FrameLayout implements TopView {
         new Runnable() {
           @Override
           public void run() {
-            layoutHeight = getHeight();
+            height = getHeight();
           }
         });
   }
@@ -41,11 +41,11 @@ public class TopLayout extends FrameLayout implements TopView {
 
   @Override
   public void stretchRecoverBy(int dy) {
-    layout(0, 0, getWidth(), layoutHeight + dy);
+    layout(0, 0, getWidth(), height + dy);
   }
 
   @Override
   public int getStretchSize() {
-    return getHeight() - layoutHeight;
+    return getHeight() - height;
   }
 }

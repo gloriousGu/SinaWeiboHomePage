@@ -28,13 +28,13 @@ public class MyRecyclerView extends RecyclerView implements ScrollItem {
       case MotionEvent.ACTION_DOWN:
         lastX = (int) ev.getRawX();
         lastY = (int) ev.getRawY();
-        getParent().getParent().requestDisallowInterceptTouchEvent(true);
+        requestDisallowInterceptTouchEvent(true);
         break;
       case MotionEvent.ACTION_MOVE:
         int x = (int) ev.getRawX();
         int y = (int) ev.getRawY();
         if (Math.abs(lastX - x) > Math.abs(lastY - y) + 4) {
-          getParent().getParent().requestDisallowInterceptTouchEvent(false);
+          getParent().requestDisallowInterceptTouchEvent(false);
         }
         lastX = x;
         lastY = y;
@@ -72,4 +72,7 @@ public class MyRecyclerView extends RecyclerView implements ScrollItem {
     int itemHeight = firstVisibleChildView.getHeight();
     return (position) * itemHeight - firstVisibleChildView.getTop();
   }
+
+  @Override
+  public void setField(boolean field) {}
 }

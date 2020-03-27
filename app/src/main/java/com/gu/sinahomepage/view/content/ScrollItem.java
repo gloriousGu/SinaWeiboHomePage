@@ -8,4 +8,6 @@ public interface ScrollItem {
   boolean isTop();
 
   void scrollDy(int dy);
+
+  void setField(boolean field);
 }

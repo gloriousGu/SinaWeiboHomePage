@@ -107,6 +107,11 @@ public class HomePageHorScrollView extends HorizontalScrollView implements ViewP
   }
 
   @Override
+  public ScrollItem getCurrentItem() {
+    return currentItem;
+  }
+
+  @Override
   public void stopChildViewFling() {
     ViewGroup viewGroup = (ViewGroup) getChildAt(0);
     for (int i = 0; i < viewGroup.getChildCount(); i++) {
@@ -179,7 +184,7 @@ public class HomePageHorScrollView extends HorizontalScrollView implements ViewP
       case MotionEvent.ACTION_DOWN:
         lastX = (int) ev.getRawX();
         lastY = (int) ev.getRawY();
-        getParent().getParent().requestDisallowInterceptTouchEvent(true);
+        requestDisallowInterceptTouchEvent(true);
         break;
     }
     return super.dispatchTouchEvent(ev);
@@ -198,7 +203,7 @@ public class HomePageHorScrollView extends HorizontalScrollView implements ViewP
         int x = (int) ev.getRawX();
         int y = (int) ev.getRawY();
         int stretchSize = ((HomePageView) getParent().getParent()).getStretchSize();
-        if (Math.abs(lastX - x) > Math.abs(lastY - y) + 4 && stretchSize == 0) {
+        if (Math.abs(lastX - x) > Math.abs(lastY - y) && stretchSize == 0) {
           // 必须有 否则横向滚动时会出现停止bug
           requestDisallowInterceptTouchEvent(true);
           return true;
@@ -236,9 +241,6 @@ public class HomePageHorScrollView extends HorizontalScrollView implements ViewP
           scrollByActionUP();
         }
         return true;
-      case MotionEvent.ACTION_CANCEL:
-        log("ACTION_CANCEL发生");
-        break;
     }
     return super.onTouchEvent(ev);
   }
@@ -252,16 +254,12 @@ public class HomePageHorScrollView extends HorizontalScrollView implements ViewP
     final int width = getWidth();
     int deltaX = scrollX - pageCurIndex * width;
     if (deltaX > 0 && deltaX > width / 3) {
-      //      smoothScrollTo((pageCurIndex + 1) * width, getScrollY());
       scroll2Page(pageCurIndex + 1);
     } else if (deltaX > 0 && deltaX <= width / 3) {
-      //      smoothScrollTo(pageCurIndex * width, getScrollY());
       scroll2Page(pageCurIndex);
     } else if (deltaX < 0 && deltaX < -width / 3) {
-      //      smoothScrollTo((pageCurIndex - 1) * width, getScrollY());
       scroll2Page(pageCurIndex - 1);
     } else if (deltaX < 0 && deltaX >= -width / 3) {
-      //      smoothScrollTo(pageCurIndex * width, getScrollY());
       scroll2Page(pageCurIndex);
     }
   }
