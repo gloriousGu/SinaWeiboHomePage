@@ -83,7 +83,8 @@ public class RecyclerViewActivity extends AppCompatActivity
 
   @Override
   public void onAppBarChangePullState(boolean doPull) {
-    right_btn.setImageLevel(doPull ? 1 : 0);
+    right_btn.setImageResource(
+        doPull ? R.drawable.common_loading_white_36px : R.drawable.ic_more_horiz_white_36px);
     if (!doPull) right_btn.setRotation(0);
   }
 
@@ -94,20 +95,21 @@ public class RecyclerViewActivity extends AppCompatActivity
 
   @Override
   public void onAppBarStartRefreshing() {
-    right_btn.setImageLevel(1);
+    right_btn.setImageResource(R.drawable.common_loading_white_36px);
     right_btn.startAnimation(animation);
   }
 
   @Override
   public void onAppBarStopRefreshing() {
     animation.cancel();
-    right_btn.setImageLevel(0);
+    right_btn.setImageResource(R.drawable.ic_more_horiz_white_36px);
   }
 
   @Override
   public void onFoldStateChanged(boolean isFold) {
     arrow.setImageLevel(isFold ? 1 : 0);
-    right_btn.setImageLevel(isFold ? 2 : 0);
+    right_btn.setImageResource(
+        isFold ? R.drawable.ic_more_horiz_grey_700_36px : R.drawable.ic_more_horiz_white_36px);
     nickname.setVisibility(isFold ? View.VISIBLE : View.INVISIBLE);
   }
 

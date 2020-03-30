@@ -96,7 +96,7 @@
                 android:layout_height="@dimen/square_btn_size"
                 android:layout_gravity="center_vertical|end"
                 android:scaleType="fitCenter"
-                android:src="@drawable/top_right_img" />
+                android:src="@drawable/ic_more_horiz_white_36px" />
         </com.gu.sinahomepage.view.appbar.TopAppBar>
 
         <com.gu.sinahomepage.view.bottom.horizontalscroll.HomePageHorScrollView
