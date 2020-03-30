@@ -1,5 +1,6 @@
 package com.gu.sinahomepage.view;
 
+import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
@@ -32,6 +33,9 @@ public class HomePageView extends NestedScrollView {
   private int FOLD_SIZE;
   private ValueAnimator animator;
   private static final float STRETCH_RATE = 0.5f; // 下拉阻尼系数
+  private static final int PULL_TO_REFRESH_SIZE = 100;
+  private boolean need2Refresh;
+  private HomePageRefreshListener refreshListener;
 
   public HomePageView(@NonNull Context context) {
     super(context);
@@ -233,11 +237,28 @@ public class HomePageView extends NestedScrollView {
     }
     topView.stretchBy(dy);
     bottomView.moveBy(dy);
+    if (getStretchSize() == 0) {
+      need2Refresh = false;
+      appBar.changePullState(false);
+    } else if (getStretchSize() < PULL_TO_REFRESH_SIZE) {
+      appBar.changePullState(true);
+      need2Refresh = false;
+    } else {
+      appBar.changeRefreshSize(PULL_TO_REFRESH_SIZE - getStretchSize());
+      need2Refresh = true;
+    }
   }
 
   private void stretchRecoverBy(int y) {
     topView.stretchRecoverBy(y);
     bottomView.moveTo(y);
+    if (y == 0) {
+      appBar.changePullState(false);
+    } else if (y < PULL_TO_REFRESH_SIZE) {
+      appBar.changePullState(true);
+    } else {
+      appBar.changeRefreshSize(PULL_TO_REFRESH_SIZE - y);
+    }
   }
 
   /** 还原拉伸 */
@@ -246,6 +267,7 @@ public class HomePageView extends NestedScrollView {
       animator = ValueAnimator.ofInt(getStretchSize(), 0).setDuration(200);
       animator.setInterpolator(new DecelerateInterpolator());
       animator.addUpdateListener(listener);
+      animator.addListener(al);
     } else {
       animator.setIntValues(getStretchSize(), 0);
     }
@@ -259,6 +281,26 @@ public class HomePageView extends NestedScrollView {
           Integer value = (Integer) animation.getAnimatedValue();
           stretchRecoverBy(value);
         }
+      };
+
+  ValueAnimator.AnimatorListener al =
+      new Animator.AnimatorListener() {
+        @Override
+        public void onAnimationStart(Animator animation) {}
+
+        @Override
+        public void onAnimationEnd(Animator animation) {
+          if (need2Refresh && refreshListener != null) {
+            refreshListener.onStartRefresh();
+            appBar.start2Refresh();
+          }
+        }
+
+        @Override
+        public void onAnimationCancel(Animator animation) {}
+
+        @Override
+        public void onAnimationRepeat(Animator animation) {}
       };
 
   @Override
@@ -276,7 +318,8 @@ public class HomePageView extends NestedScrollView {
   @Override
   protected void onScrollChanged(int l, int t, int oldl, int oldt) {
     super.onScrollChanged(l, t, oldl, oldt);
-    appBar.changeByScroll(t);
+    appBar.translationY(t);
+    appBar.changeFoldState(t == FOLD_SIZE);
   }
 
   public void log(String log) {
@@ -285,5 +328,24 @@ public class HomePageView extends NestedScrollView {
 
   public void setFoldSize(int size) {
     FOLD_SIZE = size;
+  }
+
+  /** 外部调用停止刷新 */
+  public void stopRefresh() {
+    need2Refresh = false;
+    appBar.stop2Refresh();
+    if (refreshListener != null) {
+      refreshListener.onStopRefresh();
+    }
+  }
+
+  public void setRefreshListener(HomePageRefreshListener listener) {
+    this.refreshListener = listener;
+  }
+
+  public interface HomePageRefreshListener {
+    void onStartRefresh();
+
+    void onStopRefresh();
   }
 }

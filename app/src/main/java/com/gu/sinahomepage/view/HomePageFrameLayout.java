@@ -45,7 +45,6 @@ public class HomePageFrameLayout extends FrameLayout {
     int parentHeight = MeasureSpec.getSize(heightMeasureSpec);
     FOLD_SIZE =
         imgLayout.getMeasuredHeight() - tab.getMeasuredHeight() - appBar.getMeasuredHeight();
-    appBar.setFoldSize(FOLD_SIZE);
     ((HomePageView) getParent()).setFoldSize(FOLD_SIZE);
     int height = parentHeight + FOLD_SIZE;
     bottomView.initViewSize(

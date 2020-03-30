@@ -3,16 +3,13 @@ package com.gu.sinahomepage.view.appbar;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
-import com.gu.sinahomepage.R;
-
 public class TopAppBar extends FrameLayout implements AppBar {
-  int foldSize;
-  SquareImageBtn arrow;
-  TextView nickname;
+
+  private AppBarListener listener;
+  private boolean isFold;
 
   public TopAppBar(Context context) {
     super(context);
@@ -23,23 +20,41 @@ public class TopAppBar extends FrameLayout implements AppBar {
   }
 
   @Override
-  protected void onFinishInflate() {
-    super.onFinishInflate();
-    arrow = findViewById(R.id.arrow);
-    nickname = findViewById(R.id.nickname);
+  public void setAppBarListener(AppBarListener listener) {
+    this.listener = listener;
   }
 
   @Override
-  public void changeByScroll(int y) {
+  public void translationY(int y) {
     setTranslationY(y);
-    setTransparent(y != foldSize);
-    arrow.setImageLevel(y == foldSize ? 1 : 0);
-    nickname.setVisibility(y == foldSize ? VISIBLE : INVISIBLE);
   }
 
   @Override
-  public void setFoldSize(int foldSize) {
-    this.foldSize = foldSize;
+  public void changeRefreshSize(int refreshSize) {
+    if (listener != null) listener.onAppBarChangeRefreshSize(refreshSize);
+  }
+
+  @Override
+  public void changePullState(boolean start2Pull) {
+    if (listener != null) listener.onAppBarChangePullState(start2Pull);
+  }
+
+  @Override
+  public void start2Refresh() {
+    if (listener != null) listener.onAppBarStartRefreshing();
+  }
+
+  @Override
+  public void stop2Refresh() {
+    if (listener != null) listener.onAppBarStopRefreshing();
+  }
+
+  @Override
+  public void changeFoldState(boolean isFold) {
+    if (this.isFold == isFold) return;
+    setTransparent(!isFold);
+    this.isFold = isFold;
+    if (listener != null) listener.onFoldStateChanged(isFold);
   }
 
   @Override
