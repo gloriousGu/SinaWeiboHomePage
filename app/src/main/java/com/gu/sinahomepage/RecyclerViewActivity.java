@@ -121,16 +121,17 @@ public class RecyclerViewActivity extends AppCompatActivity
   public void onStartRefresh() {
     Toast.makeText(getApplicationContext(), "请稍后,加载中...", Toast.LENGTH_SHORT).show();
     /* 模拟一个延迟加载效果 3秒后自动结束 */
-    handler.postDelayed(
-        new Runnable() {
-          @Override
-          public void run() {
-            homePageView.stopRefresh();
-          }
-        },
-        3000);
+    handler.postDelayed(refreshRunnable, 3000);
     isRefreshing = true;
   }
+
+  Runnable refreshRunnable =
+      new Runnable() {
+        @Override
+        public void run() {
+          homePageView.stopRefresh();
+        }
+      };
 
   @Override
   public void onStopRefresh() {
@@ -148,6 +149,14 @@ public class RecyclerViewActivity extends AppCompatActivity
   @Override
   protected void onDestroy() {
     super.onDestroy();
+    release();
+  }
+
+  private void release() {
+    if (handler != null) {
+      Log.e("TAG", "handler removeCallbacks! ");
+      handler.removeCallbacks(refreshRunnable);
+    }
     if (animation != null) animation.cancel();
   }
 
