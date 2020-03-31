@@ -152,6 +152,7 @@ public class RecyclerViewActivity extends AppCompatActivity
     release();
   }
 
+  /** 释放由于postDelayed没有结束的Runnable 去除内存泄漏 */
   private void release() {
     if (handler != null) {
       Log.e("TAG", "handler removeCallbacks! ");
