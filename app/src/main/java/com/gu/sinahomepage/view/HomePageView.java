@@ -33,7 +33,7 @@ public class HomePageView extends NestedScrollView {
   private int FOLD_SIZE;
   private ValueAnimator animator;
   private static final float STRETCH_RATE = 0.5f; // 下拉阻尼系数
-  private static final int PULL_TO_REFRESH_SIZE = 100;
+  private static final int PULL_TO_REFRESH_SIZE = 130;
   private boolean need2Refresh;
   private HomePageRefreshListener refreshListener;
 
@@ -237,28 +237,14 @@ public class HomePageView extends NestedScrollView {
     }
     topView.stretchBy(dy);
     bottomView.moveBy(dy);
-    if (getStretchSize() == 0) {
-      need2Refresh = false;
-      appBar.changePullState(false);
-    } else if (getStretchSize() < PULL_TO_REFRESH_SIZE) {
-      appBar.changePullState(true);
-      need2Refresh = false;
-    } else {
-      appBar.changeRefreshSize(PULL_TO_REFRESH_SIZE - getStretchSize());
-      need2Refresh = true;
-    }
+    appBar.updateByStretch(getStretchSize(), PULL_TO_REFRESH_SIZE);
+    need2Refresh = getStretchSize() >= PULL_TO_REFRESH_SIZE;
   }
 
   private void stretchRecoverBy(int y) {
     topView.stretchRecoverBy(y);
     bottomView.moveTo(y);
-    if (y == 0) {
-      appBar.changePullState(false);
-    } else if (y < PULL_TO_REFRESH_SIZE) {
-      appBar.changePullState(true);
-    } else {
-      appBar.changeRefreshSize(PULL_TO_REFRESH_SIZE - y);
-    }
+    appBar.updateByStretch(y, PULL_TO_REFRESH_SIZE);
   }
 
   /** 还原拉伸 */
@@ -290,6 +276,7 @@ public class HomePageView extends NestedScrollView {
 
         @Override
         public void onAnimationEnd(Animator animation) {
+          /*回弹动画结束后 进行刷新操作！*/
           if (need2Refresh && refreshListener != null) {
             refreshListener.onStartRefresh();
             appBar.start2Refresh();
@@ -318,6 +305,9 @@ public class HomePageView extends NestedScrollView {
   @Override
   protected void onScrollChanged(int l, int t, int oldl, int oldt) {
     super.onScrollChanged(l, t, oldl, oldt);
+    /*
+     *appBar随着滚动 始终悬浮在顶部
+     */
     appBar.translationY(t);
     appBar.changeFoldState(t == FOLD_SIZE);
   }

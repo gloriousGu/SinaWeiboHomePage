@@ -11,19 +11,23 @@ public interface AppBar {
 
   void setAppBarListener(AppBarListener listener);
 
-  void changeRefreshSize(int refreshSize);
-
-  void changePullState(boolean start2Pull);
+  void updateByStretch(int stretchSize, int refreshSize);
 
   void start2Refresh();
 
   void stop2Refresh();
 
+  /** AppBar 接到拖拽时回调 更新界面 */
   interface AppBarListener {
 
     void onAppBarChangePullState(boolean doPull);
 
-    void onAppBarChangeRefreshSize(int size);
+    /**
+     * 下拉时 appBar通知具体view响应下拉
+     *
+     * @param size 下拉距离
+     */
+    void onAppBarChangePullSize(int size);
 
     void onAppBarStartRefreshing();
 

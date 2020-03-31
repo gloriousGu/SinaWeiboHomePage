@@ -30,13 +30,14 @@ public class TopAppBar extends FrameLayout implements AppBar {
   }
 
   @Override
-  public void changeRefreshSize(int refreshSize) {
-    if (listener != null) listener.onAppBarChangeRefreshSize(refreshSize);
-  }
-
-  @Override
-  public void changePullState(boolean start2Pull) {
-    if (listener != null) listener.onAppBarChangePullState(start2Pull);
+  public void updateByStretch(int stretchSize, int refreshSize) {
+    if (stretchSize == 0) {
+      changePullState(false);
+    } else if (stretchSize < refreshSize) {
+      changePullState(true);
+    } else {
+      changeRefreshSize(refreshSize - stretchSize);
+    }
   }
 
   @Override
@@ -60,5 +61,13 @@ public class TopAppBar extends FrameLayout implements AppBar {
   @Override
   public void setTransparent(boolean transparent) {
     getBackground().setAlpha(transparent ? 0 : 255);
+  }
+
+  private void changeRefreshSize(int refreshSize) {
+    if (listener != null) listener.onAppBarChangePullSize(refreshSize);
+  }
+
+  private void changePullState(boolean start2Pull) {
+    if (listener != null) listener.onAppBarChangePullState(start2Pull);
   }
 }

@@ -5,11 +5,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,6 +29,7 @@ import com.gu.sinahomepage.view.tab.TabLayout;
 import java.util.ArrayList;
 import java.util.List;
 
+/** 使用recyclerView作为HorizontalScrollView的child --Demo-- */
 public class RecyclerViewActivity extends AppCompatActivity
     implements AppBar.AppBarListener, HomePageView.HomePageRefreshListener {
   private static final String[] titles = {"第一页", "第二页", "第三页"};
@@ -38,6 +41,7 @@ public class RecyclerViewActivity extends AppCompatActivity
   Handler handler;
   HomePageView homePageView;
   Animation animation;
+  boolean isRefreshing;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -45,17 +49,14 @@ public class RecyclerViewActivity extends AppCompatActivity
     setContentView(R.layout.activity_recycler_view);
     initAnim();
     handler = new Handler();
-    homePageView = findViewById(R.id.homePageView);
+    homePageView = (HomePageView) ((ViewGroup) findViewById(android.R.id.content)).getChildAt(0);
     homePageView.setRefreshListener(this);
     TopAppBar appBar = findViewById(R.id.appBar);
     appBar.setAppBarListener(this);
     arrow = findViewById(R.id.arrow);
     right_btn = findViewById(R.id.right_btn);
     nickname = findViewById(R.id.nickname);
-    list = new ArrayList<>();
-    for (int i = 0; i < 8; i++) {
-      list.add("text " + i);
-    }
+
     TabLayout tabLayout = findViewById(R.id.tab);
     tabLayout.createContentByTitles(titles).combine();
     ViewPager horizontalScrollView = findViewById(R.id.horizontalScrollView);
@@ -67,7 +68,10 @@ public class RecyclerViewActivity extends AppCompatActivity
     rv1.setLayoutManager(new LinearLayoutManager(this));
     rv2.setLayoutManager(new LinearLayoutManager(this));
     rv3.setLayoutManager(new LinearLayoutManager(this));
-
+    list = new ArrayList<>();
+    for (int i = 0; i < 8; i++) {
+      list.add("text " + i);
+    }
     rv1.setAdapter(new DataAdapter(this, list));
     rv2.setAdapter(new DataAdapter(this, list));
     rv3.setAdapter(new DataAdapter(this, list));
@@ -89,7 +93,7 @@ public class RecyclerViewActivity extends AppCompatActivity
   }
 
   @Override
-  public void onAppBarChangeRefreshSize(int size) {
+  public void onAppBarChangePullSize(int size) {
     right_btn.setRotation(size * 2);
   }
 
@@ -115,6 +119,7 @@ public class RecyclerViewActivity extends AppCompatActivity
 
   @Override
   public void onStartRefresh() {
+    Toast.makeText(getApplicationContext(), "请稍后,加载中...", Toast.LENGTH_SHORT).show();
     /* 模拟一个延迟加载效果 3秒后自动结束 */
     handler.postDelayed(
         new Runnable() {
@@ -124,11 +129,26 @@ public class RecyclerViewActivity extends AppCompatActivity
           }
         },
         3000);
+    isRefreshing = true;
   }
 
   @Override
   public void onStopRefresh() {
     /* finish load data! Do nothing */
+    isRefreshing = false;
+    Toast.makeText(getApplicationContext(), "加载结束", Toast.LENGTH_SHORT).show();
+  }
+
+  @Override
+  public boolean dispatchTouchEvent(MotionEvent ev) {
+    // 刷新中 禁止再次拖拽
+    return !isRefreshing && super.dispatchTouchEvent(ev);
+  }
+
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    if (animation != null) animation.cancel();
   }
 
   static class DataAdapter extends RecyclerView.Adapter {

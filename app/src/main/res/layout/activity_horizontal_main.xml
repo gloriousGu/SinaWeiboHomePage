@@ -66,7 +66,8 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/tab_height"
             android:background="@drawable/toolbar_bg"
-            android:paddingLeft="8dp">
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp">
 
             <com.gu.sinahomepage.view.appbar.SquareImageBtn
                 android:id="@+id/arrow"
@@ -85,6 +86,14 @@
                 android:textColor="@color/tab_text_sel"
                 android:textSize="16sp"
                 android:visibility="invisible" />
+
+            <com.gu.sinahomepage.view.appbar.SquareImageBtn
+                android:id="@+id/right_btn"
+                android:layout_width="1dp"
+                android:layout_height="@dimen/square_btn_size"
+                android:layout_gravity="center_vertical|end"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_more_horiz_white_36px" />
         </com.gu.sinahomepage.view.appbar.TopAppBar>
 
         <com.gu.sinahomepage.view.bottom.horizontalscroll.HomePageHorScrollView
