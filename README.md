@@ -33,6 +33,6 @@
 
 ## 草图  
 
-<img src="./pic/sina微博个人主页设计草图-1.jpg"width="50%" height="50%"/>  
+<img src="/pic/sina微博个人主页设计草图-1.jpg" width="50%" height="50%"/>  
 
-<img src="./pic/sina微博个人主页设计草图-2.jpg" width="50%" height="50%"/> 
+<img src="/pic/sina微博个人主页设计草图-2.jpg" width="50%" height="50%"/> 
