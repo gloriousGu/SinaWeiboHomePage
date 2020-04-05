@@ -22,12 +22,14 @@ import com.gu.sinahomepage.view.HomePageView;
 import com.gu.sinahomepage.view.appbar.AppBar;
 import com.gu.sinahomepage.view.appbar.SquareImageBtn;
 import com.gu.sinahomepage.view.appbar.TopAppBar;
+import com.gu.sinahomepage.view.content.BottomDecoration;
 import com.gu.sinahomepage.view.content.MyRecyclerView;
 import com.gu.sinahomepage.view.bottom.horizontalscroll.ViewPager;
 import com.gu.sinahomepage.view.tab.TabLayout;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /** 使用recyclerView作为HorizontalScrollView的child --Demo-- */
 public class RecyclerViewActivity extends AppCompatActivity
@@ -66,11 +68,13 @@ public class RecyclerViewActivity extends AppCompatActivity
     rv3 = findViewById(R.id.rv3);
 
     rv1.setLayoutManager(new LinearLayoutManager(this));
+    // 第一页加个Decoration
+    rv1.addItemDecoration(new BottomDecoration(this, 1)); // pos=2开始绘制Decoration
     rv2.setLayoutManager(new LinearLayoutManager(this));
     rv3.setLayoutManager(new LinearLayoutManager(this));
     list = new ArrayList<>();
     for (int i = 0; i < 8; i++) {
-      list.add("text " + i);
+      list.add("微博 " + i);
     }
     rv1.setAdapter(new DataAdapter(this, list));
     rv2.setAdapter(new DataAdapter(this, list));
@@ -164,27 +168,39 @@ public class RecyclerViewActivity extends AppCompatActivity
   static class DataAdapter extends RecyclerView.Adapter {
     LayoutInflater inflater;
     List<String> list;
+    String topText;
 
     DataAdapter(Context context, List<String> list) {
       super();
       inflater = LayoutInflater.from(context);
       this.list = list;
+      topText = String.format(Locale.getDefault(), "全部微博(%d)", list.size());
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+      if (position == 0) return 0;
+      return 1;
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+      if (viewType == 0)
+        return new TopHolder(inflater.inflate(R.layout.recyclerview_item_top, parent, false));
       return new ViewHolder(inflater.inflate(R.layout.recyclerview_item, parent, false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-      ((TextView) holder.itemView).setText(list.get(position));
+      if (position == 0) {
+        ((TextView) holder.itemView).setText(topText);
+      } else ((TextView) holder.itemView).setText(list.get(position - 1));
     }
 
     @Override
     public int getItemCount() {
-      return list.size();
+      return list.size() + 1;
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
@@ -197,6 +213,12 @@ public class RecyclerViewActivity extends AppCompatActivity
                 Log.e("TAG", "onClick: " + getAdapterPosition());
               }
             });
+      }
+    }
+
+    static class TopHolder extends RecyclerView.ViewHolder {
+      TopHolder(@NonNull View itemView) {
+        super(itemView);
       }
     }
   }

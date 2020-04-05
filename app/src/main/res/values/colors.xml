@@ -11,4 +11,9 @@
     <color name="tab_text_nor">#b8b8b8</color>
     <color name="tab_text_sel">#353535</color>
     <color name="orange_red">#FF4500</color>
+    <!--  divider color  -->
+    <!--  old dividerColor #f5f5f5-->
+    <color name="dividerColor">#e4e4e4</color>
+    <color name="footerTextColor">#a4a9b0</color>
+    <color name="dividerLineColor">#d0d0d0</color>
 </resources>

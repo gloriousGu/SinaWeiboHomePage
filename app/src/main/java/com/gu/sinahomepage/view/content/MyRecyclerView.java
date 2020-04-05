@@ -57,20 +57,12 @@ public class MyRecyclerView extends RecyclerView implements ScrollItem {
 
   @Override
   public boolean isTop() {
-    return getScrollYDistance() == 0;
+    return !canScrollVertically(-1);
   }
 
   @Override
   public void scrollDy(int dy) {
     scrollBy(0, dy);
-  }
-
-  private int getScrollYDistance() {
-    LinearLayoutManager layoutManager = (LinearLayoutManager) this.getLayoutManager();
-    int position = layoutManager.findFirstVisibleItemPosition();
-    View firstVisibleChildView = layoutManager.findViewByPosition(position);
-    int itemHeight = firstVisibleChildView.getHeight();
-    return (position) * itemHeight - firstVisibleChildView.getTop();
   }
 
   @Override
